@@ -1,105 +1,120 @@
 <template>
-    <div class="flex overflow-hidden bg-white">
-      <aside class="sidebar bg-gray-100 w-64">
-        <div class="flex items-center gap-4 p-4 text-xs font-extrabold text-white bg-red-950 rounded-lg">
-          <img src="../../../public/assets/Exclude.png" alt="Logo" class="object-contain w-[20px]" />
-          <span>$IKEDEB</span>
-        </div>
-        <Link href="/dashboard" class="sidebar-link" :class="{'active': activeMenu === 'home'}" @click="setActiveMenu('home')">
-        
-          <img src="../../../public/assets/Vector.png" alt="Home Icon" class="icon" /> 
-          Home
-        </Link>
-        <a href="/kelola" class="sidebar-link" :class="{'active': activeMenu === 'kelola'}" @click="setActiveMenu('kelola')">
-          <img src="../../../public/assets/Icon.png" alt="Kelola Data Icon" class="icon" /> 
-          Kelola Data
-        </a>
-        
-      </aside>
-  
-      <main class="flex-1 p-5">
-        <header class="py-4">
-          <div class="container mx-auto flex justify-between items-center px-9">
-            <h1 class="text-gray-800 font-bold">{{ activeMenu === 'home' ? 'Home' : 'Kelola Data' }}</h1>
-            <div class="flex items-center gap-2">
-              <div class="relative">
-                <input type="text" v-model="searchQuery" placeholder="Search..." class="search-input" />
-                <button @click="handleSearch" class="search-button absolute inset-y-0 right-0 flex items-center pr-3">🔍</button>
-              </div>
-              <button @click="addNew" class="add-new-button">Add New</button>
-            </div>
-          </div>
-        </header>
-  
-        <nav class="tabs mt-4 flex space-x-4">
-          <a href="#" @click="setTab('all')" :class="{'active-tab': currentTab === 'all'}">All</a>
-          <a href="#" @click="setTab('ongoing')" :class="{'active-tab': currentTab === 'ongoing'}">On Going</a>
-          <a href="#" @click="setTab('approved')" :class="{'active-tab': currentTab === 'approved'}">Approved</a>
-          <a href="#" @click="setTab('rejected')" :class="{'active-tab': currentTab === 'rejected'}">Rejected</a>
-        </nav>
-  
-        <table class="data-table mt-4">
-          <thead>
-            <tr>
-              <th>NIK</th>
-              <th>Nama</th>
-              <th>Status</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            
-            <tr v-for="nasabah in nasabahList" :key="nasabah.id">
-              <td>{{ nasabah.nik }}</td>
-              <td>{{ nasabah.nama }}</td>
-              <td>{{ nasabah.status }}</td>
-              
-            </tr>
-          </tbody>
-        </table>
-      </main>
-      
-    </div>
-    
-  </template>
-  
-  <script setup>
-  import { ref, computed } from 'vue';
-  
-  const activeMenu = ref('home');
-  const searchQuery = ref('');
-  const currentTab = ref('all');
+  <div class="flex overflow-hidden bg-white">
+    <aside class="sidebar bg-gray-100 w-64">
+      <div class="flex items-center gap-4 p-4 text-xs font-extrabold text-white bg-red-950 rounded-lg">
+        <img src="../../../public/assets/Exclude.png" alt="Logo" class="object-contain w-[20px]" />
+        <span>$IKEDEB</span>
+      </div>
+      <Link href="/dashboard" class="sidebar-link" :class="{'active': activeMenu === 'home'}" @click="setActiveMenu('home')">
+        <img src="../../../public/assets/Vector.png" alt="Home Icon" class="icon" /> 
+        Home
+      </Link>
+      <a href="/kelola" class="sidebar-link" :class="{'active': activeMenu === 'kelola'}" @click="setActiveMenu('kelola')">
+        <img src="../../../public/assets/Icon.png" alt="Kelola Data Icon" class="icon" /> 
+        Kelola Data
+      </a>
+    </aside>
 
-  function setActiveMenu(menu) {
-    activeMenu.value = menu;
+    <main class="flex-1 p-5">
+      <header class="py-4">
+        <div class="container mx-auto flex justify-between items-center px-9">
+          <h1 class="text-gray-800 font-bold">{{ activeMenu === 'home' ? 'Home' : 'Kelola Data' }}</h1>
+          <div class="flex items-center gap-2">
+            <div class="relative">
+              <input type="text" v-model="searchQuery" placeholder="Search..." class="search-input" />
+              <button @click="handleSearch" class="search-button absolute inset-y-0 right-0 flex items-center pr-3">🔍</button>
+            </div>
+            <button @click="addNew" class="add-new-button">Add New</button>
+          </div>
+        </div>
+      </header>
+
+      <nav class="tabs mt-4 flex space-x-4">
+        <a href="#" @click="setTab('all')" :class="{'active-tab': currentTab === 'all'}">All</a>
+        <a href="#" @click="setTab('ongoing')" :class="{'active-tab': currentTab === 'ongoing'}">On Going</a>
+        <a href="#" @click="setTab('approved')" :class="{'active-tab': currentTab === 'approved'}">Approved</a>
+        <a href="#" @click="setTab('rejected')" :class="{'active-tab': currentTab === 'rejected'}">Rejected</a>
+      </nav>
+
+      <table class="data-table mt-4">
+        <thead>
+          <tr>
+            <th>NIK</th>
+            <th>Nama</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="nasabah in nasabahList" :key="nasabah.id">
+            <td>{{ nasabah.nik }}</td>
+            <td>{{ nasabah.nama }}</td>
+            <td>{{ nasabah.status }}</td>
+            <td>
+              <select @change="handleAction($event, nasabah.id)">
+                <option value="">Pilih Aksi</option>
+                <option value="hitung">Hitung</option>
+                <option value="edit">Edit</option>
+                <option value="hapus">Hapus</option>
+              </select>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue';
+import { Inertia } from '@inertiajs/inertia';
+
+const activeMenu = ref('home');
+const searchQuery = ref('');
+const currentTab = ref('all');
+
+function setActiveMenu(menu) {
+  activeMenu.value = menu;
+}
+
+function addNew() {
+  Inertia.visit('/kelola');
+}
+
+function setTab(tab) {
+  currentTab.value = tab;
+}
+
+function handleAction(event, id) {
+  const action = event.target.value;
+  if (action === 'hitung') {
+    alert(`Menghitung data nasabah dengan ID: ${id}`);
+  } else if (action === 'edit') {
+    Inertia.get(route('data.edit', id));
+  } else if (action === 'hapus') {
+    if (confirm('Yakin ingin menghapus nasabah ini?')) {
+      Inertia.delete(route('data.destroy', id), {
+        onSuccess: () => {
+          alert('Nasabah berhasil dihapus');
+          event.target.value = ''; // reset dropdown
+        },
+        onError: () => alert('Terjadi kesalahan saat menghapus data'),
+      });
+    }
   }
-  
-  function addNew() {
-    Inertia.visit('/kelola');
-  }
-  
-  function setTab(tab) {
-    currentTab.value = tab;
-  }
-  
-  const filteredItems = computed(() => {
-    return items.value.filter(item => {
-      const matchesSearch = item.nama.toLowerCase().includes(searchQuery.value.toLowerCase());
-      const matchesTab = currentTab.value === 'all' || item.status.toLowerCase() === currentTab.value;
-      return matchesSearch && matchesTab;
-    });
-  });
-  
-  </script>
+  event.target.value = ''; // reset dropdown
+}
+
+</script>
 
 <script>
-import { Inertia } from '@inertiajs/inertia';
 export default {
   props: {
     nasabahList: Array,
   },
 };
 </script>
+
 
   <style scoped>
   .sidebar {

@@ -48,7 +48,14 @@ Route::get('/kelola', function () {
     return Inertia::render('KelolaData');
 })->middleware(['auth', 'verified'])->name('keloladata');
 
-Route::post('/data/store', [DataController::class, 'store'])->name('data.store');
-Route::get('/dashboard/data', [DataController::class, 'index'])->name('data.get');
+Route::middleware(['auth'])->group(function () {
+    Route::post('/data/store', [DataController::class, 'store'])->name('data.store');
+    Route::get('/dashboard/data', [DataController::class, 'index'])->name('data.get');
+    Route::get('/data/{id}/edit', [DataController::class, 'edit'])->name('data.edit');
+    Route::put('/data/{id}', [DataController::class, 'update'])->name('data.update');
+    Route::delete('/data/{id}', [DataController::class, 'destroy'])->name('data.destroy');
+});
+
+
 
 require __DIR__.'/auth.php';

@@ -24,4 +24,11 @@ class Nasabah extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function pengajuan()
+    {
+        return $this->hasOne(Pengajuan::class, 'nasabah_id');
+    }
+
+
 }
