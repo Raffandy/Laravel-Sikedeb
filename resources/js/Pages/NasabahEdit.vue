@@ -1,197 +1,178 @@
 <template>
   <div class="flex overflow-hidden bg-white">
     <aside class="sidebar bg-gray-100 w-64">
-      <!-- Sidebar implementation remains unchanged -->
-      ...
+      <div class="flex items-center gap-4 p-4 text-xs font-extrabold text-white bg-red-950 rounded-lg">
+        <span>$IKEDEB</span>
+      </div>
+      <a href="/dashboard/data" class="sidebar-link" :class="{ 'active': activeMenu === 'home' }" @click="setActiveMenu('home')">
+        <img src="../../../public/assets/Vector.png" alt="Kelola Data Icon" class="icon" />
+        Home
+      </a>
+      <div>
+        <a href="#" class="sidebar-link" :class="{'active': activeMenu === 'kelola'}" @click="toggleKelolaMenu">
+          <img src="../../../public/assets/Icon.png" alt="Kelola Data Icon" class="icon" /> 
+          Kelola Data
+        </a>
+        <div v-if="isKelolaMenuOpen" class="submenu">
+          <a href="#" class="sidebar-link" :class="{'active': activeDataMenu === 'personal'}" @click="setActiveDataMenu('personal')">
+            Personal Details
+          </a>
+          <a href="#" class="sidebar-link" :class="{'active': activeDataMenu === 'applicant'}" @click="setActiveDataMenu('applicant')">
+            Applicant Details
+          </a>
+          <a href="#" class="sidebar-link" :class="{'active': activeDataMenu === 'collateral'}" @click="setActiveDataMenu('collateral')">
+            Collateral Details
+          </a>
+        </div>
+      </div>
     </aside>
 
     <main class="flex-1 p-5">
       <header class="py-4">
-        <div class="container mx-auto flex justify-between items-center px-9">
-          <h1 class="text-gray-800 font-bold">{{ activeMenu === 'home' ? 'Home' : 'Kelola Data' }}</h1>
-          <div class="flex items-center gap-2">
-            <div class="relative">
-              <input type="text" v-model="searchQuery" placeholder="Search..." class="search-input" />
-              <button @click="handleSearch" class="search-button absolute inset-y-0 right-0 flex items-center pr-3">🔍</button>
-            </div>
-            <button @click="addNew" class="add-new-button">Add New</button>
-          </div>
-        </div>
+        <h1 class="text-gray-800 font-bold">Edit Data Nasabah</h1>
       </header>
 
-      <!-- Personal Details Form -->
-      <form v-if="activeDataMenu === 'personal'" class="personal-details-form mt-4" @submit.prevent="nextForm('personal')">
-        <h2 class="text-lg font-bold mb-2">Personal Details</h2>
-        <div class="flex flex-col space-y-2">
-          <input type="text" v-model="personalDetails.nama" placeholder="Nama" class="form-input" required />
-          <input type="text" v-model="personalDetails.nik" placeholder="NIK" class="form-input" required />
-          <input type="text" v-model="personalDetails.alamat" placeholder="Alamat" class="form-input" required />
-          <input type="text" v-model="personalDetails.pekerjaan" placeholder="Pekerjaan" class="form-input" required />
-          <input type="text" v-model="personalDetails.jenis_usaha" placeholder="Jenis Usaha" class="form-input" required />
-        </div>
-        <button type="submit" class="next-button mt-4">Next</button>
-      </form>
+      <!-- Form for Editing Nasabah Details -->
+      <div :key="nasabah.id">
+      <form @submit.prevent="updateNasabah">
+        <!-- Personal Details Section -->
+        <section v-if="activeDataMenu === 'personal'" class="personal-details-form mt-4">
+          <h2 class="text-lg font-bold mb-2">Personal Details</h2>
+          <div class="flex flex-col space-y-2">
+            <input type="text" v-model="form.nama" placeholder="Nama" class="form-input" required />
+            <input type="text" v-model="form.nik" placeholder="NIK" class="form-input" required />
+            <input type="text" v-model="form.alamat" placeholder="Alamat" class="form-input" required />
+            <input type="text" v-model="form.pekerjaan" placeholder="Pekerjaan" class="form-input" required />
+            <input type="text" v-model="form.jenis_usaha" placeholder="Jenis Usaha" class="form-input" required />
+          </div>
+          <button type="button" @click="nextForm('applicant')" class="next-button mt-4">Next</button>
+        </section>
 
-      <!-- Applicant Details Form -->
-      <form v-if="activeDataMenu === 'applicant'" class="applicant-details-form mt-4" @submit.prevent="nextForm('applicant')">
-        <h2 class="text-lg font-bold mb-2">Applicant Details</h2>
-        <div class="flex flex-col space-y-2">
-          <label for="penilaianSLIK" class="font-semibold">Penilaian SLIK OJK</label>
-          <select id="penilaianSLIK" v-model="applicantDetails.slik" class="form-input" required>
-            <option value="" disabled selected>Pilih Penilaian (1-5)</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-          </select>
-          <input type="number" v-model="applicantDetails.pendapatan_utama" placeholder="Pendapatan Utama" class="form-input" required />
-          <input type="number" v-model="applicantDetails.pendapatan_lain" placeholder="Pendapatan Lain" class="form-input" required />
-          <input type="number" v-model="applicantDetails.modal" placeholder="Modal" class="form-input" required />
-          <input type="number" v-model="applicantDetails.aset" placeholder="Aset Selain Jaminan" class="form-input" required />
-          <input type="number" v-model="applicantDetails.tanggungan" placeholder="Jumlah Tanggungan" class="form-input" required />
-          <input type="number" v-model="applicantDetails.biaya_lain" placeholder="Biaya Lain" class="form-input" required />
-        </div>
-        <button type="submit" class="next-button mt-4">Next</button>
-      </form>
+        <!-- Applicant Details Section -->
+        <section v-if="activeDataMenu === 'applicant'" class="applicant-details-form mt-4">
+          <h2 class="text-lg font-bold mb-2">Applicant Details</h2>
+          <div class="flex flex-col space-y-2">
+            <label for="penilaianSLIK" class="font-semibold">Penilaian SLIK OJK</label>
+            <select id="penilaianSLIK" v-model="form.slik" class="form-input" required>
+              <option value="" disabled selected>Pilih Penilaian (1-5)</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+            <input type="number" v-model="form.pendapatan_utama" placeholder="Pendapatan Utama" class="form-input" required />
+            <input type="number" v-model="form.pendapatan_lain" placeholder="Pendapatan Lain" class="form-input" />
+            <input type="number" v-model="form.modal" placeholder="Modal" class="form-input" />
+            <input type="number" v-model="form.aset" placeholder="Aset Selain Jaminan" class="form-input" />
+            <input type="number" v-model="form.tanggungan" placeholder="Jumlah Tanggungan" class="form-input" />
+            <input type="number" v-model="form.biaya_lain" placeholder="Biaya Lain" class="form-input" />
+          </div>
+          <button type="button" @click="nextForm('collateral')" class="next-button mt-4">Next</button>
+        </section>
 
-      <!-- Collateral Details Form -->
-      <form v-if="activeDataMenu === 'collateral'" class="collateral-details-form mt-4" @submit.prevent="finishEdit">
-        <h2 class="text-lg font-bold mb-2">Collateral Details</h2>
-        <div class="flex flex-col space-y-2">
-          <label for="jenisJaminan" class="font-semibold">Jenis Jaminan</label>
-          <select id="jenisJaminan" v-model="collateralDetails.jenis_jaminan" class="form-input" required>
-            <option value="" disabled selected>Pilih Jenis Jaminan</option>
-            <option value="BPKB">BPKB</option>
-            <option value="SHM">SHM</option>
-          </select>
-          <input type="number" v-model="collateralDetails.harga" placeholder="Harga" class="form-input" required />
-        </div>
-        <button type="submit" class="finish-button mt-4">Finish</button>
+        <!-- Collateral Details Section -->
+        <section v-if="activeDataMenu === 'collateral'" class="collateral-details-form mt-4">
+          <h2 class="text-lg font-bold mb-2">Collateral Details</h2>
+          <div class="flex flex-col space-y-2">
+            <label for="jenisJaminan" class="font-semibold">Jenis Jaminan</label>
+            <select id="jenisJaminan" v-model="form.jenis_jaminan" class="form-input" required>
+              <option value="" disabled selected>Pilih Jenis Jaminan</option>
+              <option value="BPKB">BPKB</option>
+              <option value="SHM">SHM</option>
+            </select>
+            <input type="number" v-model="form.harga" placeholder="Harga" class="form-input" required />
+          </div>
+          <button type="submit" class="finish-button mt-4">Save</button>
+        </section>
       </form>
+      </div>
     </main>
   </div>
 </template>
 
-
-<script setup>
-import { ref, onMounted } from 'vue';
+<script>
+import { ref, reactive, watch } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 
-const activeMenu = ref('kelola');
-const activeDataMenu = ref('personal');
-const searchQuery = ref('');
-const isKelolaMenuOpen = ref(false);
-const nasabahId = ref(null); // ID Nasabah untuk edit
-const editMode = ref(false);
+export default {
+  props: {
+    nasabah: Object,
+  },
+  setup(props) {
+    const activeDataMenu = ref('personal');
+    const isKelolaMenuOpen = ref(false);
 
-const personalDetails = ref({
-  nama: '',
-  nik: '',
-  alamat: '',
-  pekerjaan: '',
-  jenis_usaha: '',
-});
-
-const applicantDetails = ref({
-  slik: '',
-  pendapatan_utama: '',
-  pendapatan_lain: '',
-  modal: '',
-  aset: '',
-  tanggungan: '',
-  biaya_lain: '',
-});
-
-const collateralDetails = ref({
-  jenis_jaminan: '',
-  harga: '',
-});
-
-// Mengambil data untuk edit
-onMounted(() => {
-  if (editMode.value) {
-    Inertia.get(`/data/${nasabahId.value}/edit`, {
-      onSuccess: (page) => {
-        const data = page.props.nasabah;
-        Object.assign(personalDetails.value, data.personalDetails);
-        Object.assign(applicantDetails.value, data.applicantDetails);
-        Object.assign(collateralDetails.value, data.collateralDetails);
-      },
+    const form = reactive({
+      nama: '',
+      nik: '',
+      alamat: '',
+      pekerjaan: '',
+      jenis_usaha: '',
+      slik: '',
+      pendapatan_utama: 0,
+      pendapatan_lain: 0,
+      modal: 0,
+      aset: 0,
+      tanggungan: 0,
+      biaya_lain: 0,
+      jenis_jaminan: '',
+      harga: 0,
     });
-  }
-});
 
-function nextForm(currentForm) {
-  if (currentForm === 'personal') {
-    // Validasi Personal Details
-    if (Object.values(personalDetails.value).every(field => field)) {
-      activeDataMenu.value = 'applicant';
-    } else {
-      alert('All fields in Personal Details are required.');
-    }
-  } else if (currentForm === 'applicant') {
-    // Validasi Applicant Details
-    if (Object.values(applicantDetails.value).every(field => field)) {
-      activeDataMenu.value = 'collateral';
-    } else {
-      alert('All fields in Applicant Details are required.');
-    }
-  } else if (currentForm === 'collateral') {
-    // Validasi Collateral Details dan kirim data ke server
-    if (Object.values(collateralDetails.value).every(field => field)) {
-      const data = {
-        ...personalDetails.value,
-        ...applicantDetails.value,
-        ...collateralDetails.value,
-      };
-      Inertia.post('/data/store', data, {
-        onSuccess: () => alert('Data berhasil disimpan!'),
+    const updateFormFields = (nasabah) => {
+      form.nama = nasabah.nama || '';
+      form.nik = nasabah.nik || '';
+      form.alamat = nasabah.alamat || '';
+      form.pekerjaan = nasabah.pekerjaan || '';
+      form.jenis_usaha = nasabah.jenis_usaha || '';
+      form.slik = nasabah.pengajuan?.slik || '';
+      form.pendapatan_utama = nasabah.pengajuan?.pendapatan_utama || 0;
+      form.pendapatan_lain = nasabah.pengajuan?.pendapatan_lain || 0;
+      form.modal = nasabah.pengajuan?.modal || 0;
+      form.aset = nasabah.pengajuan?.aset || 0;
+      form.tanggungan = nasabah.pengajuan?.tanggungan || 0;
+      form.biaya_lain = nasabah.pengajuan?.biaya_lain || 0;
+      form.jenis_jaminan = nasabah.pengajuan?.jenis_jaminan || '';
+      form.harga = nasabah.pengajuan?.harga || 0;
+    };
+
+    // Watch nasabah to update form fields when props.nasabah changes
+    watch(() => props.nasabah, (newNasabah) => {
+      updateFormFields(newNasabah);
+    }, { immediate: true });
+
+    const toggleKelolaMenu = () => {
+      isKelolaMenuOpen.value = !isKelolaMenuOpen.value;
+    };
+
+    const nextForm = (section) => {
+      activeDataMenu.value = section;
+    };
+
+    const updateNasabah = () => {
+      Inertia.put(`/data/${props.nasabah.id}`, form, {
+        onSuccess: () => {
+          alert('Data berhasil diperbarui!');
+        },
+        onError: (errors) => {
+          console.log('Update error:', errors);
+        }
       });
-    } else {
-      alert('All fields in Collateral Details are required.');
-    }
-  }
-}
+    };
 
-function finishEdit() {
-  const data = {
-    ...personalDetails.value,
-    ...applicantDetails.value,
-    ...collateralDetails.value,
-  };
-
-  if (editMode.value) {
-    Inertia.put(`/data/${nasabahId.value}`, data, {
-      onSuccess: () => alert('Data berhasil diperbarui!'),
-    });
-  } else {
-    Inertia.post('/data/store', data, {
-      onSuccess: () => alert('Data berhasil disimpan!'),
-    });
-  }
-}
-
-function setActiveMenu(menu) {
-  activeMenu.value = menu;
-}
-
-function toggleKelolaMenu() {
-  isKelolaMenuOpen.value = !isKelolaMenuOpen.value;
-}
-
-function setActiveDataMenu(menu) {
-  activeDataMenu.value = menu;
-}
-
-function handleSearch() {
-  console.log('Search Query:', searchQuery.value);
-}
-
-function addNew() {
-  Inertia.visit('/kelola');
-}
+    return {
+      form,
+      activeDataMenu,
+      nextForm,
+      updateNasabah,
+      isKelolaMenuOpen,
+      toggleKelolaMenu,
+    };
+  },
+};
 </script>
+
 
 
 

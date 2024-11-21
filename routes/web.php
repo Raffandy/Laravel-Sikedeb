@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DataController;
+use App\Http\Controllers\PerhitunganController;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -54,8 +55,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/data/{id}/edit', [DataController::class, 'edit'])->name('data.edit');
     Route::put('/data/{id}', [DataController::class, 'update'])->name('data.update');
     Route::delete('/data/{id}', [DataController::class, 'destroy'])->name('data.destroy');
+
+    Route::post('/nasabah/hitung/{id}', [PerhitunganController::class, 'store'])->name('nasabah.hitung');
+
 });
 
 
+Route::get('/penilaian', function () {
+    return Inertia::render('PenilaianView');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 require __DIR__.'/auth.php';

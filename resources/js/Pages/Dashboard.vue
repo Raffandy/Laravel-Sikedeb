@@ -1,10 +1,13 @@
 <template>
   <div class="flex overflow-hidden bg-white">
-    <aside class="sidebar bg-gray-100 w-64">
+    <aside class="sidebar bg-gray-100 w-64 flex flex-col">
+      <!-- Logo Section -->
       <div class="flex items-center gap-4 p-4 text-xs font-extrabold text-white bg-red-950 rounded-lg">
         <img src="../../../public/assets/Exclude.png" alt="Logo" class="object-contain w-[20px]" />
         <span>$IKEDEB</span>
       </div>
+      
+      <!-- Sidebar Links -->
       <Link href="/dashboard" class="sidebar-link" :class="{'active': activeMenu === 'home'}" @click="setActiveMenu('home')">
         <img src="../../../public/assets/Vector.png" alt="Home Icon" class="icon" /> 
         Home
@@ -13,6 +16,27 @@
         <img src="../../../public/assets/Icon.png" alt="Kelola Data Icon" class="icon" /> 
         Kelola Data
       </a>
+
+      <!-- Flex Grow to Push Profile to Bottom -->
+      <div class="flex-grow"></div>
+
+      <!-- User Profile Section (at the bottom) -->
+      <div class="user-profile mt-4 p-4 cursor-pointer" @click="toggleProfileModal">
+        <div class="flex items-center gap-2 p-2 border-t-2 border-gray-200 hover:bg-gray-100 rounded-lg">
+          <img src="../../../public/assets/user.png" alt="Profile Icon" class="icon" />
+          <span class="text-sm font-medium">{{ username }}</span>
+        </div>
+      </div>
+
+      <!-- User Profile Modal -->
+      <div v-if="profileModalOpen" class="profile-modal fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg w-80 shadow-lg">
+          <h2 class="text-xl font-bold mb-4">User Profile</h2>
+          <p class="text-sm text-gray-600 mb-4">Name: {{ username }}</p>
+          <button @click="logout" class="logout-button mt-4 w-full bg-red-500 text-white py-2 rounded">Logout</button>
+          <button @click="toggleProfileModal" class="cancel-button mt-2 w-full bg-gray-300 text-black py-2 rounded">Cancel</button>
+        </div>
+      </div>
     </aside>
 
     <main class="flex-1 p-5">
@@ -29,6 +53,7 @@
         </div>
       </header>
 
+      <!-- Tabs Navigation -->
       <nav class="tabs mt-4 flex space-x-4">
         <a href="#" @click="setTab('all')" :class="{'active-tab': currentTab === 'all'}">All</a>
         <a href="#" @click="setTab('ongoing')" :class="{'active-tab': currentTab === 'ongoing'}">On Going</a>
@@ -36,6 +61,7 @@
         <a href="#" @click="setTab('rejected')" :class="{'active-tab': currentTab === 'rejected'}">Rejected</a>
       </nav>
 
+      <!-- Table of Data Nasabah -->
       <table class="data-table mt-4">
         <thead>
           <tr>
@@ -65,6 +91,7 @@
   </div>
 </template>
 
+
 <script setup>
 import { ref, computed } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
@@ -72,6 +99,7 @@ import { Inertia } from '@inertiajs/inertia';
 const activeMenu = ref('home');
 const searchQuery = ref('');
 const currentTab = ref('all');
+const profileModalOpen = ref(false);
 
 function setActiveMenu(menu) {
   activeMenu.value = menu;
@@ -88,7 +116,14 @@ function setTab(tab) {
 function handleAction(event, id) {
   const action = event.target.value;
   if (action === 'hitung') {
-    alert(`Menghitung data nasabah dengan ID: ${id}`);
+    Inertia.post(route('nasabah.hitung', id), {}, {
+      onSuccess: () => {
+        alert(`Perhitungan data nasabah dengan ID: ${id} berhasil dijalankan.`);
+      },
+      onError: () => {
+        alert(`Gagal menghitung data nasabah dengan ID: ${id}`);
+      }
+    });
   } else if (action === 'edit') {
     Inertia.get(route('data.edit', id));
   } else if (action === 'hapus') {
@@ -105,12 +140,20 @@ function handleAction(event, id) {
   event.target.value = ''; // reset dropdown
 }
 
+function toggleProfileModal() {
+  profileModalOpen.value = !profileModalOpen.value;
+}
+
+function logout() {
+  Inertia.post(route('logout'));
+}
 </script>
 
 <script>
 export default {
   props: {
     nasabahList: Array,
+    username: String,
   },
 };
 </script>

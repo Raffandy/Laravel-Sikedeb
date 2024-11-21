@@ -21,6 +21,7 @@ class DataController extends Controller
         }
 
         return Inertia::render('Dashboard', [
+            'username' => auth()->user()->name,
             'nasabahList' => $nasabahList
         ]);
     }
@@ -33,7 +34,7 @@ class DataController extends Controller
             'alamat' => 'required|string',
             'pekerjaan' => 'required|string|max:100',
             'jenis_usaha' => 'required|string|max:100',
-            'slik' => 'required|string',
+            'slik' => 'required|numeric',
             'pendapatan_utama' => 'required|numeric',
             'pendapatan_lain' => 'nullable|numeric',
             'modal' => 'nullable|numeric',
@@ -88,7 +89,7 @@ class DataController extends Controller
             'alamat' => 'required|string',
             'pekerjaan' => 'required|string|max:100',
             'jenis_usaha' => 'required|string|max:100',
-            'slik' => 'required|string',
+            'slik' => 'required|numeric',
             'pendapatan_utama' => 'required|numeric',
             'pendapatan_lain' => 'nullable|numeric',
             'modal' => 'nullable|numeric',

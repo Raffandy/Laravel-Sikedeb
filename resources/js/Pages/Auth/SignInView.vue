@@ -60,7 +60,6 @@
 
 <script setup>
 import { ref } from "vue";
-import { Inertia } from '@inertiajs/inertia';
 
 const form = ref({
   email: "",
@@ -70,31 +69,32 @@ const form = ref({
 const errorMessage = ref("");
 
 const handleSubmit = () => {
+  // Check if password length is at least 8 characters
   if (form.value.password.length < 8) {
     errorMessage.value = "Password must be at least 8 characters.";
     return;
   }
 
+  // Check if email is valid
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailPattern.test(form.value.email)) {
     errorMessage.value = "Please enter a valid email address.";
     return;
   }
 
-  // if (!validateEmailPassword(form.value.email, form.value.password)) {
-  //   errorMessage.value = "Email and password do not meet the synchronization rules.";
-  //   return;
-  // }
+  // Simulate validation between email and password for synchronization rules
+  if (!validateEmailPassword(form.value.email, form.value.password)) {
+    errorMessage.value = "Email and password do not meet the synchronization rules.";
+    return;
+  }
 
-  errorMessage.value = ""; 
-  Inertia.post('/login', form.value, {
-    onError: (errors) => {
-      errorMessage.value = errors.email || errors.password || "Login failed";
-    }
-  });
+  errorMessage.value = ""; // Reset error message if all checks pass
+  alert("Form submitted successfully!"); // Placeholder for form submission logic
 };
 
+// Example function to validate "synchronization" between email and password
 const validateEmailPassword = (email, password) => {
+  // Example rule: Password cannot contain the email local part (before '@')
   const emailLocalPart = email.split("@")[0];
   return !password.includes(emailLocalPart);
 };
