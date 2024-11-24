@@ -16,6 +16,10 @@
         <img src="../../../public/assets/Icon.png" alt="Kelola Data Icon" class="icon" /> 
         Kelola Data
       </a>
+      <a v-if="role === 'admin'" href="/register" class="sidebar-link" :class="{'active': activeMenu === 'register'}" @click="setActiveMenu('register')">
+        <img src="../../../public/assets/Register.png" alt="Register Icon" class="icon" /> 
+        Registrasi User
+      </a>
 
       <!-- Flex Grow to Push Profile to Bottom -->
       <div class="flex-grow"></div>
@@ -56,9 +60,9 @@
       <!-- Tabs Navigation -->
       <nav class="tabs mt-4 flex space-x-4">
         <a href="#" @click="setTab('all')" :class="{'active-tab': currentTab === 'all'}">All</a>
-        <a href="#" @click="setTab('ongoing')" :class="{'active-tab': currentTab === 'ongoing'}">On Going</a>
-        <a href="#" @click="setTab('approved')" :class="{'active-tab': currentTab === 'approved'}">Approved</a>
-        <a href="#" @click="setTab('rejected')" :class="{'active-tab': currentTab === 'rejected'}">Rejected</a>
+        <a href="#" @click="setTab('on going')" :class="{'active-tab': currentTab === 'on going'}">On Going</a>
+        <a href="#" @click="setTab('layak')" :class="{'active-tab': currentTab === 'layak'}">Layak</a>
+        <a href="#" @click="setTab('tidak layak')" :class="{'active-tab': currentTab === 'tidak layak'}">Tidak Layak</a>
       </nav>
 
       <!-- Table of Data Nasabah -->
@@ -111,6 +115,17 @@ function addNew() {
 
 function setTab(tab) {
   currentTab.value = tab;
+  Inertia.get(route('data.get'), {
+    search: searchQuery.value,
+    filter: tab, // Kirim nilai filter
+  });
+}
+
+function handleSearch() {
+  Inertia.get(route('data.get'), {
+    search: searchQuery.value,
+    filter: currentTab.value, // Misalnya 'all', 'approved', dll.
+  });
 }
 
 function handleAction(event, id) {
@@ -154,6 +169,7 @@ export default {
   props: {
     nasabahList: Array,
     username: String,
+    role: String,
   },
 };
 </script>

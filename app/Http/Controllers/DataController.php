@@ -9,22 +9,41 @@ use Inertia\Inertia;
 
 class DataController extends Controller
 {
-    public function index()
-    {
-        $user = auth()->user();
+    public function index(Request $request)
+{
+    $user = auth()->user();
+    $query = Nasabah::query();
 
-        // Admin melihat semua data, user biasa hanya melihat data miliknya
-        if ($user->role === 'admin') {
-            $nasabahList = Nasabah::all();
-        } else {
-            $nasabahList = Nasabah::where('user_id', $user->id)->get();
-        }
-
-        return Inertia::render('Dashboard', [
-            'username' => auth()->user()->name,
-            'nasabahList' => $nasabahList
-        ]);
+    // Admin melihat semua data, user biasa hanya melihat data miliknya
+    if ($user->role !== 'admin') {
+        $query->where('user_id', $user->id);
     }
+
+    // Filter berdasarkan tab
+    if ($request->filter === 'on going') {
+        $query->where('status', 'on going');
+    } elseif ($request->filter === 'layak') {
+        $query->where('status', 'layak');
+    } elseif ($request->filter === 'tidak layak') {
+        $query->where('status', 'tidak layak');
+    }
+
+    // Pencarian
+    if ($request->has('search')) {
+        $query->where(function ($q) use ($request) {
+            $q->where('nik', 'like', "%{$request->search}%")
+              ->orWhere('nama', 'like', "%{$request->search}%");
+        });
+    }
+
+    $nasabahList = $query->get();
+
+    return Inertia::render('Dashboard', [
+        'username' => $user->name,
+        'nasabahList' => $nasabahList,
+        'role' => $user->role,
+    ]);
+}
 
     public function store(Request $request)
     {
