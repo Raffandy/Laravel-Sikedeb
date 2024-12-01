@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Nasabah;
 use App\Models\Pengajuan;
+use App\Models\ProfilStandar;
 
 class PerhitunganController extends Controller
 {
@@ -22,6 +23,9 @@ class PerhitunganController extends Controller
 
     // Ambil atau buat data pengajuan berdasarkan ID nasabah
     $pengajuan = Pengajuan::firstOrNew(['nasabah_id' => $nasabah->id]);
+
+    // Ambil data profil standar
+    $profilStandar = ProfilStandar::First();
 
     // Dapatkan input dari request atau default ke nilai sebelumnya di database
     $pengajuan->slik = $request->input('slik', $pengajuan->slik);
@@ -44,16 +48,16 @@ class PerhitunganController extends Controller
     $nilai_biaya_lain = $this->calculateBiayaLain($pengajuan->biaya_lain);
     $nilai_bpkb = $this->calculateBpkb($pengajuan->jenis_jaminan, $pengajuan->harga);
 
-        // Profil standar
+        // Profil standar dari database
         $profil_standar = [
-            'c1' => 4,
-            'c2' => 3,
-            'c3' => 3,
-            'c4' => 3,
-            'c5' => 4,
-            'c6' => 4,
-            'c7' => 5,
-            'c8' => 3,
+            'c1' => $profilStandar->slik,
+            'c2' => $profilStandar->pendapatan_utama,
+            'c3' => $profilStandar->pendapatan_lain,
+            'c4' => $profilStandar->modal,
+            'c5' => $profilStandar->aset,
+            'c6' => $profilStandar->tanggungan,
+            'c7' => $profilStandar->biaya_lain,
+            'c8' => $profilStandar->bpkb,
         ];
 
         // Hitung gap
@@ -74,7 +78,7 @@ class PerhitunganController extends Controller
 
         // Hitung total nilai
         $total_nilai = (0.6 * $core_factor) + (0.4 * $secondary_factor);
-        $pengajuan->total_nilai = $total_nilai;
+        $nasabah->nilai = $total_nilai;
 
         // Tentukan kelayakan berdasarkan nilai
         $nasabah->status = $total_nilai >= 3.4 ? 'layak' : 'tidak layak';
@@ -83,7 +87,13 @@ class PerhitunganController extends Controller
         // $pengajuan->save();
         $nasabah->save();
 
-        return redirect()->route('data.get')->with('success', 'Data nasabah berhasil disimpan.');
+        $nasabah = Nasabah::with('pengajuan')->findOrFail($id);
+
+        return redirect()->route('data.get')->with([
+            'success' => 'Data nasabah berhasil dihitung.',
+            'selectedNasabah' => $nasabah,
+        ]);
+        // return redirect()->route('data.get')->with('success', 'Data nasabah berhasil disimpan.');
     }
 
     // Fungsi-fungsi perhitungan nilai

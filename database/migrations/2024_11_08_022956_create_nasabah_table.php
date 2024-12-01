@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('pekerjaan');
             $table->string('jenis_usaha');
             $table->enum('status',['on going','layak','tidak layak'])->default('on going');
+            $table->float('nilai')->default(0);
             $table->timestamps();
         });
     }

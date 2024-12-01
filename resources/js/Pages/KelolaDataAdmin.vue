@@ -25,6 +25,9 @@
           <a href="#" class="sidebar-link" :class="{'active': activeDataMenu === 'collateral'}" @click="setActiveDataMenu('collateral')">
             Collateral Details
           </a>
+          <a href="#" class="sidebar-link" :class="{'active': activeDataMenu === 'operator'}" @click="setActiveDataMenu('operator')">
+              Operator Details
+          </a>
         </div>
       </div>
       <!-- Flex Grow to Push Profile to Bottom -->
@@ -52,6 +55,17 @@
           </div>
         </div>
       </header>
+
+      <!-- User Profile Modal -->
+      <div v-if="profileModalOpen" class="profile-modal fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg w-80 shadow-lg">
+          <h2 class="text-xl font-bold mb-4">User Profile</h2>
+          <p class="text-sm text-gray-600 mb-4">Name: {{ username }}</p>
+          <button @click="Inertia.get(route('profile.edit'));" class="cancel-button mt-2 w-full bg-blue-300 text-black py-2 rounded">Profil</button>
+          <button @click="Inertia.post(route('logout'));" class="logout-button mt-4 w-full bg-red-500 text-white py-2 rounded">Logout</button>
+          <button @click="toggleProfileModal" class="cancel-button mt-2 w-full bg-gray-300 text-black py-2 rounded">Cancel</button>
+        </div>
+      </div>
 
       <!-- Personal Details Form -->
       <form v-if="activeDataMenu === 'personal'" class="personal-details-form mt-4" @submit.prevent="nextForm('personal')">
@@ -101,8 +115,21 @@
           </select>
           <input type="number" v-model="collateralDetails.harga" placeholder="Harga" class="form-input" required />
         </div>
-        <button type="submit" class="finish-button mt-4">Finish</button>
+        <button type="submit" class="finish-button mt-4">Next</button>
       </form>
+
+      <!-- Operator Details Form -->
+        <form v-if="activeDataMenu === 'operator'" class="operator-details-form mt-4" @submit.prevent="nextForm('operator')">
+          <h2 class="text-lg font-bold mb-2">Operator Details</h2>
+          <div class="flex flex-col space-y-2">
+            <label for="user_id" class="font-semibold">Nama Petugas</label>
+            <select v-model="operatorDetails.user_id" id="user_id" class="form-input" required>
+              <option value="" disabled selected>Pilih Petugas</option>
+              <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+            </select>
+          </div>
+          <button type="submit" class="finish-button mt-4">Finish</button>
+        </form>
     </main>
   </div>
 </template>
@@ -115,6 +142,7 @@ const activeMenu = ref('kelola');
 const activeDataMenu = ref('personal');
 const searchQuery = ref('');
 const isKelolaMenuOpen = ref(false);
+const profileModalOpen = ref(false);
 
 const personalDetails = ref({
   nama: '',
@@ -139,18 +167,25 @@ const collateralDetails = ref({
   harga: '',
 });
 
+const operatorDetails = ref({
+  user_id: '',
+});
+
 function nextForm(currentForm) {
   if (currentForm === 'personal') {
     activeDataMenu.value = 'applicant';
   } else if (currentForm === 'applicant') {
     activeDataMenu.value = 'collateral';
   } else if (currentForm === 'collateral') {
+    activeDataMenu.value = 'operator';
+  }else if (currentForm === 'operator') {
       const data = {
         ...personalDetails.value,
         ...applicantDetails.value,
         ...collateralDetails.value,
+        ...operatorDetails.value,
       };
-      Inertia.post('/data/store', data, {
+      Inertia.post('/data/store-admin', data, {
         onSuccess: () => alert('Data berhasil disimpan!'),
       });
   }
@@ -177,12 +212,19 @@ function addNew() {
   Inertia.visit('/kelola');
 }
 
+function toggleProfileModal() {
+  profileModalOpen.value = !profileModalOpen.value;
+}
+
 </script>
 <script>
 export default {
   props: {
     username: String,
     role: String,
+    users: {
+        type: Array,
+    },
   },
 };
 </script>

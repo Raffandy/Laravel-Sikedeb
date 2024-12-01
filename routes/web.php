@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\PerhitunganController;
+use App\Http\Controllers\ProfilStandarController;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -43,13 +44,12 @@ Route::middleware(['auth', 'role:user'])->group(function(){
     Route::get('/user/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
 });
 
-
-// CRUD BARU
-Route::get('/kelola', function () {
-    return Inertia::render('KelolaData');
-})->middleware(['auth', 'verified'])->name('keloladata');
+// Route::get('/kelola', function () {
+//     return Inertia::render('KelolaData');
+// })->middleware(['auth', 'verified'])->name('keloladata');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/kelola', [DataController::class, 'kelola'])->name('keloladata');
     Route::post('/data/store', [DataController::class, 'store'])->name('data.store');
     Route::get('/dashboard/data', [DataController::class, 'index'])->name('data.get');
     Route::get('/data/{id}/edit', [DataController::class, 'edit'])->name('data.edit');
@@ -58,11 +58,20 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/nasabah/hitung/{id}', [PerhitunganController::class, 'store'])->name('nasabah.hitung');
 
+    Route::get('/profil-standar', [ProfilStandarController::class, 'index'])->name('profil-standar.index');
+    Route::put('/profil-standar/update', [ProfilStandarController::class, 'update'])->name('profil-standar.update');
+
+    Route::get('/kelola-admin', [DataController::class, 'kelolaAdmin'])->name('data.kelolaAdmin');
+    Route::post('/data/store-admin', [DataController::class, 'storeAdmin'])->name('data.storeAdmin');
+
 });
 
 
 Route::get('/penilaian', function () {
     return Inertia::render('PenilaianView');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified'])->name('penilaian');
+Route::get('/tes', function () {
+    return Inertia::render('TesDashboard');
+})->middleware(['auth', 'verified'])->name('tes');
 
 require __DIR__.'/auth.php';

@@ -9,7 +9,7 @@
           alt=""
           class="object-contain shrink-0 my-auto w-2 aspect-[0.8]"
         />
-        <a href="#" data-layername="back">Back</a>
+        <a href="/" data-layername="back" class="text-base">Back</a>
       </nav>
       <h1 data-layername="signIn" class="self-center mt-20 text-xl font-bold text-slate-900 text-opacity-90 max-md:mt-10">
         Sign In
@@ -36,7 +36,7 @@
           class="mt-1 w-full rounded-sm border border-solid border-black border-opacity-50 h-[41px] px-3"
           required
         />
-        <a href="#" data-layername="forgotPassword" class="self-start mt-5 text-blue-600">
+        <a href="/forgot-password" data-layername="forgotPassword" class="self-start mt-5 text-blue-600">
           Forgot password?
         </a>
         <p v-if="errorMessage" class="mt-3 text-red-600">{{ errorMessage }}</p>
@@ -48,12 +48,12 @@
           Sign in
         </button>
       </form>
-      <footer class="flex gap-1 self-start mt-7">
+      <!-- <footer class="flex gap-1 self-start mt-7">
         <p data-layername="dontHaveAnAccount" class="grow text-black text-opacity-50">
           Don't have an account?
         </p>
         <a href="#" data-layername="signUp" class="text-blue-600">Sign up</a>
-      </footer>
+      </footer> -->
     </section>
   </main>
 </template>

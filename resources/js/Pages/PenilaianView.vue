@@ -1,191 +1,173 @@
 <template>
-    <div class="flex overflow-hidden bg-white">
-      <aside class="sidebar bg-gray-100 w-64">
-        <div class="flex items-center gap-4 p-4 text-xs font-extrabold text-white bg-red-950 rounded-lg">
-          <img src="../../../public/assets/Exclude.png" alt="Logo" class="object-contain w-[20px]" />
-          <span>$IKEDEB</span>
+  <div class="flex overflow-hidden bg-white h-screen">
+    <aside class="sidebar bg-gray-100 w-64">
+      <div class="flex items-center gap-4 p-4 text-xs font-extrabold text-white bg-red-950 rounded-lg">
+        <img src="../../../public/assets/Exclude.png" alt="Logo" class="object-contain w-[20px]" />
+        <span>$IKEDEB</span>
+      </div>
+      <a href="#" class="sidebar-link" :class="{'active': activeMenu === 'profil standar'}" @click="setActiveMenu('profil standar')">
+        <img src="../../../public/assets/IconPenilaian.png" alt="Penilaian Icon" class="icon" /> Profil Standar
+      </a>
+    </aside>
+
+    <main class="flex-1 p-5 overflow-y-auto">
+      <header class="py-2">
+        <div class="container mx-auto flex justify-between items-center">
+          <h1 class="text-gray-800 font-bold text-lg">{{ activeMenu === 'home' ? 'Home' : 'Profil Standar' }}</h1>
         </div>
-        <a href="#" class="sidebar-link" :class="{'active': activeMenu === 'penilaian kelayakan'}" @click="setActiveMenu('penilaian kelayakan')">
-          <img src="../../../public/assets/IconPenilaian.png" alt="Penilaian Icon" class="icon" /> Penilaian Kelayakan
-        </a>
-      </aside>
-  
-      <main class="flex-1 p-5">
-        <header class="py-4">
-          <div class="container mx-auto flex justify-between items-center px-9">
-            <h1 class="text-gray-800 font-bold">{{ activeMenu === 'home' ? 'Home' : 'Penilaian Kelayakan' }}</h1>
-            <div class="flex items-center gap-2">
-              <div class="relative">
-                <input type="text" v-model="searchQuery" placeholder="Search..." class="search-input" />
-                <button @click="handleSearch" class="search-button absolute inset-y-0 right-0 flex items-center pr-3">🔍</button>
-              </div>
-              <button @click="addNew" class="add-new-button">Add New</button>
-            </div>
-          </div>
-        </header>
-  
-        <section class="mt-6">
-          <h2 class="text-gray-800 font-semibold mb-4">Form Bobot Character</h2>
-          <div class="form-group">
-            <label for="sik-ojk" class="block text-gray-700 font mb-2">SLIK OJK</label>
-            <select v-model="selectedOJK" id="sik-ojk" class="dropdown w-full p-2 border border-gray-300 rounded">
-              <option value="5">SLIK OJK 1 (5 = Lancar)</option>
-              <option value="4">SLIK OJK 2 (4 = Dalam Perhatian Khusus)</option>
-              <option value="3">SLIK OJK 3 (3 = Kurang Lancar)</option>
-              <option value="2">SLIK OJK 4 (2 = Diragukan)</option>
-              <option value="1">SLIK OJK 5 (1 = Macet)</option>
-            </select>
-          </div>
-  
-          <!-- Bobot Capacity Form -->
-          <h2 class="text-gray-800 font-semibold mb-4 mt-6">Form Bobot Capacity</h2>
-          <div class="flex gap-4">
-            <div class="form-group flex-1">
-              <label for="pendapatan-utama" class="block text-gray-700 font mb-2">Pendapatan Utama</label>
-              <select v-model="selectedPendapatanUtama" id="pendapatan-utama" class="dropdown w-full p-2 border border-gray-300 rounded">
-                <option value="5">&gt;= 15.000.000 (5 = Sangat Penting)</option>
-                <option value="4">10.000.000-14.999.999 (4 = Penting)</option>
-                <option value="3">5.000.000-9.999.000 (3 = Cukup Penting)</option>
-                <option value="2">1.500.000-4.999.000 (2 = Kurang Penting)</option>
-                <option value="1">&lt;1.499.000 (1 = Sangat Kurang Penting)</option>
-              </select>
-            </div>
-            <div class="form-group flex-1">
-              <label for="pendapatan-lain" class="block text-gray-700 font mb-2">Pendapatan Lain</label>
-              <select v-model="selectedPendapatanLain" id="pendapatan-lain" class="dropdown w-full p-2 border border-gray-300 rounded">
-                <option value="5">&gt;= 15.000.000 (5 = Sangat Penting)</option>
-                <option value="4">10.000.000-14.999.999 (4 = Penting)</option>
-                <option value="3">5.000.000-9.999.000 (3 = Cukup Penting)</option>
-                <option value="2">1.500.000-4.999.000 (2 = Kurang Penting)</option>
-                <option value="1">&lt;1.499.000 (1 = Sangat Kurang Penting)</option>
-              </select>
-            </div>
-          </div>
-  
-          <!-- Bobot Capital Form -->
-          <h2 class="text-gray-800 font-semibold mb-4 mt-6">Form Bobot Capital</h2>
-          <div class="flex gap-4">
-            <div class="form-group flex-1">
-              <label for="modal" class="block text-gray-700 font mb-2">Modal</label>
-              <select v-model="selectedModal" id="modal" class="dropdown w-full p-2 border border-gray-300 rounded">
-                <option value="5">&gt;= 100.000.000 (5 = Sangat Penting)</option>
-                <option value="4">75.000.000-99.999.000 (4 = Penting)</option>
-                <option value="3">50.000.000-74.999.000 (3 = Cukup Penting)</option>
-                <option value="2">25.000.000-49.999.000 (2 = Kurang Penting)</option>
-                <option value="1">&lt;24.999.000 (1 = Sangat Kurang Penting)</option>
-              </select>
-            </div>
-            <div class="form-group flex-1">
-              <label for="aset-selain-jaminan" class="block text-gray-700 font mb-2">Aset Selain Jaminan</label>
-              <select v-model="selectedAsetSelainJaminan" id="aset-selain-jaminan" class="dropdown w-full p-2 border border-gray-300 rounded">
-                <option value="5">&gt;= 100.000.000 (5 = Sangat Penting)</option>
-                <option value="4">75.000.000-99.999.000 (4 = Penting)</option>
-                <option value="3">50.000.000-74.999.000 (3 = Cukup Penting)</option>
-                <option value="2">25.000.000-49.999.000 (2 = Kurang Penting)</option>
-                <option value="1">&lt;24.999.000 (1 = Sangat Kurang Penting)</option>
-              </select>
-            </div>
-          </div>
-          <router-link to="/penilaian2" class="next-button mt-8 inline-block text-center">
-          Next
-        </router-link>
-        </section>
-      </main>
-    </div>
-  </template>
-  
-  <script setup>
-  import { ref, computed } from 'vue';
+      </header>
 
-  
-  const searchQuery = ref('');
-  const selectedOJK = ref('5'); 
-  const selectedPendapatanUtama = ref('5');
-  const selectedPendapatanLain = ref('5');
-  const selectedModal = ref('5');
-  const selectedAsetSelainJaminan = ref('5');
-  const currentTab = ref('all');
+      <form @submit.prevent="updateProfilStandar">
+      <section class="mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- Form Bobot Character -->
+        <div class="form-section">
+          <h2 class="text-gray-800 font-semibold mb-2">SLIK OJK</h2>
+          <select v-model="form.slik" id="slik" class="dropdown w-full p-2 border border-gray-300 rounded">
+            <option value="5">SLIK OJK 1 (5 = Lancar)</option>
+            <option value="4">SLIK OJK 2 (4 = Dalam Perhatian Khusus)</option>
+            <option value="3">SLIK OJK 3 (3 = Kurang Lancar)</option>
+            <option value="2">SLIK OJK 4 (2 = Diragukan)</option>
+            <option value="1">SLIK OJK 5 (1 = Macet)</option>
+          </select>
+        </div>
 
-  
-  
-  function setActiveMenu(menu) {
-    activeMenu.value = menu;
-  }
-  
-  function handleSearch() {}
-  
-  function addNew() {
-    console.log('Adding new item');
-  }
-  
-  function setTab(tab) {
-    currentTab.value = tab;
-  }
-  
-  const filteredItems = computed(() => {
-    return items.value.filter(item => {
-      const matchesSearch = item.nama.toLowerCase().includes(searchQuery.value.toLowerCase());
-      const matchesTab = currentTab.value === 'all' || item.status.toLowerCase() === currentTab.value;
-      return matchesSearch && matchesTab;
-    });
-  });
-  </script>
-  
-  <style scoped>
-  .sidebar {
-    padding: 1rem;
-    height: 100vh;
-  }
-  .sidebar-link {
-    display: flex;
-    align-items: center;
-    padding: 1rem;
-    text-decoration: none;
-    color: #333;
-    transition: color 0.3s;
-  }
-  .sidebar-link.active {
-    color: blue;
-  }
-  .sidebar-link:hover {
-    background-color: #f0f0f0;
-  }
-  .icon {
-    width: 20px;
-    margin-right: 0.5rem;
-  }
-  .search-input {
-    border: 1px solid #ddd;
-    padding: 0.5rem;
-    padding-right: 2.5rem;
-  }
-  .search-button {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-  }
-  .add-new-button {
-    background-color: #3b82f6;
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-  }
-  .dropdown {
-    border: 1px solid #ddd;
-    padding: 0.5rem;
-    border-radius: 5px;
-  }
-  .next-button {
+        <!-- Form Bobot Capacity -->
+        <div class="form-section">
+          <h2 class="text-gray-800 font-semibold mb-2">Pendapatan Utama</h2>
+          <select v-model="form.pendapatan_utama" id="pendapatan_utama" class="dropdown w-full p-2 border border-gray-300 rounded">
+            <option value="5">&gt;= 15.000.000 (5 = Sangat Penting)</option>
+            <option value="4">10.000.000-14.999.999 (4 = Penting)</option>
+            <option value="3">5.000.000-9.999.000 (3 = Cukup Penting)</option>
+            <option value="2">1.500.000-4.999.000 (2 = Kurang Penting)</option>
+            <option value="1">&lt;1.499.000 (1 = Sangat Kurang Penting)</option>
+          </select>
+        </div>
+
+        <div class="form-section">
+          <h2 class="text-gray-800 font-semibold mb-2">Pendapatan Lain</h2>
+          <select v-model="form.pendapatan_lain" id="pendapatan_lain" class="dropdown w-full p-2 border border-gray-300 rounded">
+            <option value="5">&gt;= 15.000.000 (5 = Sangat Penting)</option>
+            <option value="4">10.000.000-14.999.999 (4 = Penting)</option>
+            <option value="3">5.000.000-9.999.000 (3 = Cukup Penting)</option>
+            <option value="2">1.500.000-4.999.000 (2 = Kurang Penting)</option>
+            <option value="1">&lt;1.499.000 (1 = Sangat Kurang Penting)</option>
+          </select>
+        </div>
+
+        <!-- Form Bobot Capital -->
+        <div class="form-section">
+          <h2 class="text-gray-800 font-semibold mb-2">Modal</h2>
+          <select v-model="form.modal" id="modal" class="dropdown w-full p-2 border border-gray-300 rounded">
+            <option value="5">&gt;= 100.000.000 (5 = Sangat Penting)</option>
+            <option value="4">75.000.000-99.999.000 (4 = Penting)</option>
+            <option value="3">50.000.000-74.999.000 (3 = Cukup Penting)</option>
+            <option value="2">25.000.000-49.999.000 (2 = Kurang Penting)</option>
+            <option value="1">&lt;24.999.000 (1 = Sangat Kurang Penting)</option>
+          </select>
+        </div>
+
+        <div class="form-section">
+          <h2 class="text-gray-800 font-semibold mb-2">Aset Selain Jaminan</h2>
+          <select v-model="form.aset" id="aset" class="dropdown w-full p-2 border border-gray-300 rounded">
+            <option value="5">&gt;= 100.000.000 (5 = Sangat Penting)</option>
+            <option value="4">75.000.000-99.999.000 (4 = Penting)</option>
+            <option value="3">50.000.000-74.999.000 (3 = Cukup Penting)</option>
+            <option value="2">25.000.000-49.999.000 (2 = Kurang Penting)</option>
+            <option value="1">&lt;24.999.000 (1 = Sangat Kurang Penting)</option>
+          </select>
+        </div>
+
+        <!-- Form Bobot Condition -->
+        <div class="form-section">
+          <h2 class="text-gray-800 font-semibold mb-2">Jumlah Tanggungan</h2>
+          <select v-model="form.tanggungan" id="tanggungan" class="dropdown w-full p-2 border border-gray-300 rounded">
+            <option value="5">0 - 1 (5 = Sangat Penting)</option>
+            <option value="4">2 - 3 (4 = Penting)</option>
+            <option value="3">4 - 5 (3 = Cukup Penting)</option>
+            <option value="2">6 - 7 (2 = Kurang Penting)</option>
+            <option value="1">> 7 (1 = Sangat Kurang Penting)</option>
+          </select>
+        </div>
+
+        <div class="form-section">
+          <h2 class="text-gray-800 font-semibold mb-2">Biaya Lain</h2>
+          <select v-model="form.biaya_lain" id="biaya_lain" class="dropdown w-full p-2 border border-gray-300 rounded">
+            <option value="5">< 999.000 (5 = Sangat Penting)</option>
+            <option value="4">1.000.000 - 1.999.000 (4 = Penting)</option>
+            <option value="3">2.000.000 - 2.999.000 (3 = Cukup Penting)</option>
+            <option value="2">3.000.000 - 3.999.000 (2 = Kurang Penting)</option>
+            <option value="1">>= 4.000.000 (1 = Sangat Kurang Penting)</option>
+          </select>
+        </div>
+
+        <!-- Form Bobot Collateral -->
+        <div class="form-section">
+          <h2 class="text-gray-800 font-semibold mb-2">BPKB</h2>
+          <select v-model="form.bpkb" id="bpkb" class="dropdown w-full p-2 border border-gray-300 rounded">
+            <option value="5">>= 50.000.000 (5 = Sangat Penting)</option>
+            <option value="4">25.000.000 - 49.999.000 (4 = Penting)</option>
+            <option value="3">15.000.000 - 24.999.000 (3 = Cukup Penting)</option>
+            <option value="2">5.000.000 - 14.999.000 (2 = Kurang Penting)</option>
+            <option value="1">< 4.999.000 (1 = Sangat Kurang Penting)</option>
+          </select>
+        </div>
+
+        <div class="form-section">
+          <h2 class="text-gray-800 font-semibold mb-2">SHM</h2>
+          <select v-model="form.shm" id="shm" class="dropdown w-full p-2 border border-gray-300 rounded">
+            <option value="5">>= 200.000.000 (5 = Sangat Penting)</option>
+            <option value="4">150.000.000 - 199.999.000 (4 = Penting)</option>
+            <option value="3">100.000.000 - 149.999.000 (3 = Cukup Penting)</option>
+            <option value="2">50.000.000 - 99.999.000 (2 = Kurang Penting)</option>
+            <option value="1">< 49.999.000 (1 = Sangat Kurang Penting)</option>
+          </select>
+        </div>
+
+      </section>
+      </form>
+
+      <router-link to="" class="next-button mt-6 inline-block text-center">
+        Update
+      </router-link>
+    </main>
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive } from 'vue';
+import { Inertia } from '@inertiajs/inertia';
+</script>
+
+<script>
+
+</script>
+
+<style scoped>
+.sidebar {
+  padding: 1rem;
+  height: 100vh;
+}
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  text-decoration: none;
+  color: #333;
+}
+.form-section {
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.dropdown {
+  font-size: 0.875rem;
+}
+.next-button {
   background-color: #3b82f6;
   color: white;
-  padding: 0.5rem 1.5rem;
-  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
   font-weight: bold;
-  transition: background-color 0.3s;
 }
-
-.next-button:hover {
-  background-color: #2563eb;
-}
-  </style>
-  
+</style>
