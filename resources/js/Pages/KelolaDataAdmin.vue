@@ -30,6 +30,15 @@
           </a>
         </div>
       </div>
+      <!-- End of Sesuaikan Bar Kelola untuk User dan Admin -->
+      <a v-if="role === 'admin'" href="/profil-standar" class="sidebar-link" :class="{'active': activeMenu === 'profil standar'}" @click="setActiveMenu('profil standar')">
+        <img src="../../../public/assets/IconPenilaian.png" alt="Penilaian Icon" class="icon" /> 
+        Profil Standar
+      </a>
+      <a v-if="role === 'admin'" href="/register" class="sidebar-link" :class="{'active': activeMenu === 'register'}" @click="setActiveMenu('register')">
+        <img src="../../../public/assets/Register.png" alt="Register Icon" class="icon" /> 
+        Registrasi User
+      </a>
       <!-- Flex Grow to Push Profile to Bottom -->
       <div class="flex-grow"></div>
 
@@ -44,7 +53,7 @@
 
     <main class="flex-1 p-5">
       <header class="py-4">
-        <div class="container mx-auto flex justify-between items-center px-9">
+        <!-- <div class="container mx-auto flex justify-between items-center px-9">
           <h1 class="text-gray-800 font-bold">{{ activeMenu === 'home' ? 'Home' : 'Kelola Data' }}</h1>
           <div class="flex items-center gap-2">
             <div class="relative">
@@ -53,7 +62,7 @@
             </div>
             <button @click="addNew" class="add-new-button">Add New</button>
           </div>
-        </div>
+        </div> -->
       </header>
 
       <!-- User Profile Modal -->
@@ -141,7 +150,7 @@ import { Inertia } from '@inertiajs/inertia';
 const activeMenu = ref('kelola');
 const activeDataMenu = ref('personal');
 const searchQuery = ref('');
-const isKelolaMenuOpen = ref(false);
+const isKelolaMenuOpen = ref(true);
 const profileModalOpen = ref(false);
 
 const personalDetails = ref({

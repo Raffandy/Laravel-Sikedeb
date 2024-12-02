@@ -1,25 +1,19 @@
 <template>
-  <div class="flex overflow-hidden bg-white h-screen">
-    <!-- Sidebar -->
-    <aside class="sidebar bg-gray-100 w-64">
-      <div class="flex items-center gap-4 p-4 text-xs font-extrabold text-white bg-red-950 rounded-lg">
-        <img src="/assets/Exclude.png" alt="Logo" class="object-contain w-[20px]" />
-        <span>$IKEDEB</span>
-      </div>
-      <a href="#" class="sidebar-link" :class="{ 'active': activeMenu === 'profil standar' }" @click.prevent="setActiveMenu('profil standar')">
-        <img src="/assets/IconPenilaian.png" alt="Penilaian Icon" class="icon" /> Profil Standar
-      </a>
-    </aside>
+  <div class="flex">
+    <!-- Sidebar Component -->
+    <Sidebar />
 
     <!-- Main Content -->
-    <main class="flex-1 p-5 overflow-y-auto">
+    <main class="flex-1 p-5 overflow-y-auto ml-16"> <!-- Reduced left margin here -->
       <header class="py-2">
         <div class="container mx-auto flex justify-between items-center">
-          <h1 class="text-gray-800 font-bold text-lg">{{ activeMenu === 'home' ? 'Home' : 'Profil Standar' }}</h1>
+          <h1 class="text-gray-800 font-bold text-lg">
+            {{ activeMenu === 'profil standar' ? 'Profil Standar' : 'Menu Lainnya' }}
+          </h1>
         </div>
       </header>
 
-      <form @submit.prevent="submitForm" class="mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      <form @submit.prevent="submitForm" class="mt-4 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <!-- Form Sections -->
         <div v-for="(item, index) in formItems" :key="index" class="form-section">
           <h2 class="text-gray-800 font-semibold mb-2">{{ item.label }}</h2>
@@ -40,9 +34,11 @@
     </main>
   </div>
 </template>
+
 <script setup>
 import { ref } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
+import Sidebar from './Sidebar.vue'; // Import Sidebar component
 
 // Sidebar State
 const activeMenu = ref('profil standar');
@@ -151,8 +147,8 @@ const formItems = [
     options: [
       { value: 5, text: '>= 50.000.000 (5 = Sangat Penting)' },
       { value: 4, text: '25.000.000 - 49.999.999 (4 = Penting)' },
-      { value: 3, text: '15.000.000 - 24.999.999 (3 = Cukup Penting)' },
-      { value: 2, text: '5.000.000 - 14.999.999 (2 = Kurang Penting)' },
+      { value: 3, text: '10.000.000 - 24.999.999 (3 = Cukup Penting)' },
+      { value: 2, text: '5.000.000 - 9.999.999 (2 = Kurang Penting)' },
       { value: 1, text: '< 4.999.999 (1 = Sangat Kurang Penting)' },
     ],
   },
@@ -160,11 +156,11 @@ const formItems = [
     label: 'SHM',
     key: 'shm',
     options: [
-      { value: 5, text: '>= 200.000.000 (5 = Sangat Penting)' },
-      { value: 4, text: '150.000.000 - 199.999.999 (4 = Penting)' },
-      { value: 3, text: '100.000.000 - 149.999.999 (3 = Cukup Penting)' },
-      { value: 2, text: '50.000.000 - 99.999.999 (2 = Kurang Penting)' },
-      { value: 1, text: '< 49.999.999 (1 = Sangat Kurang Penting)' },
+      { value: 5, text: '>= 100.000.000 (5 = Sangat Penting)' },
+      { value: 4, text: '50.000.000 - 99.999.999 (4 = Penting)' },
+      { value: 3, text: '25.000.000 - 49.999.999 (3 = Cukup Penting)' },
+      { value: 2, text: '10.000.000 - 24.999.999 (2 = Kurang Penting)' },
+      { value: 1, text: '< 9.999.999 (1 = Sangat Kurang Penting)' },
     ],
   },
 ];
@@ -173,17 +169,35 @@ const formItems = [
 const submitForm = () => {
   Inertia.put(route('profil-standar.update'), form.value);
 };
-
 </script>
 
-<style>
+<style scoped>
+/* Custom Styles for Form Layout */
 .form-section {
-  background: #f9f9f9;
   padding: 1rem;
+  border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: white;
 }
+
 .dropdown {
-  font-size: 0.875rem;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  background-color: #fff;
+}
+
+.next-button {
+  padding: 10px 20px;
+  background-color: #ff3b3f;
+  color: white;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.next-button:hover {
+  background-color: #f00;
 }
 </style>

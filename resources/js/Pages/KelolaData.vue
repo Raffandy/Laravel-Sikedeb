@@ -41,7 +41,7 @@
 
     <main class="flex-1 p-5">
       <header class="py-4">
-        <div class="container mx-auto flex justify-between items-center px-9">
+        <!-- <div class="container mx-auto flex justify-between items-center px-9">
           <h1 class="text-gray-800 font-bold">{{ activeMenu === 'home' ? 'Home' : 'Kelola Data' }}</h1>
           <div class="flex items-center gap-2">
             <div class="relative">
@@ -50,8 +50,19 @@
             </div>
             <button @click="addNew" class="add-new-button">Add New</button>
           </div>
-        </div>
+        </div> -->
       </header>
+
+      <!-- User Profile Modal -->
+      <div v-if="profileModalOpen" class="profile-modal fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg w-80 shadow-lg">
+          <h2 class="text-xl font-bold mb-4">User Profile</h2>
+          <p class="text-sm text-gray-600 mb-4">Name: {{ username }}</p>
+          <button @click="Inertia.get(route('profile.edit'));" class="cancel-button mt-2 w-full bg-blue-300 text-black py-2 rounded">Profil</button>
+          <button @click="Inertia.post(route('logout'));" class="logout-button mt-4 w-full bg-red-500 text-white py-2 rounded">Logout</button>
+          <button @click="toggleProfileModal" class="cancel-button mt-2 w-full bg-gray-300 text-black py-2 rounded">Cancel</button>
+        </div>
+      </div>
 
       <!-- Personal Details Form -->
       <form v-if="activeDataMenu === 'personal'" class="personal-details-form mt-4" @submit.prevent="nextForm('personal')">
@@ -114,7 +125,8 @@ import { Inertia } from '@inertiajs/inertia';
 const activeMenu = ref('kelola');
 const activeDataMenu = ref('personal');
 const searchQuery = ref('');
-const isKelolaMenuOpen = ref(false);
+const isKelolaMenuOpen = ref(true);
+const profileModalOpen = ref(false);
 
 const personalDetails = ref({
   nama: '',
@@ -177,7 +189,11 @@ function addNew() {
   Inertia.visit('/kelola');
 }
 
+function toggleProfileModal() {
+  profileModalOpen.value = !profileModalOpen.value;
+}
 </script>
+
 <script>
 export default {
   props: {

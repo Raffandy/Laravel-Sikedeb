@@ -23,9 +23,10 @@ const showingNavigationDropdown = ref(false);
                             <!-- Logo -->
                             <div class="flex shrink-0 items-center">
                                 <Link :href="route('dashboard')">
-                                    <ApplicationLogo
-                                        class="block h-9 w-auto fill-current text-gray-800"
-                                    />
+                                    <div class="flex items-center gap-4 p-4 text-xs font-extrabold text-black">
+                                        <img src="../../../public/assets/Exclude.png" alt="Logo" class="object-contain w-[20px]" />
+                                        <span>$IKEDEB</span>
+                                    </div>
                                 </Link>
                             </div>
 

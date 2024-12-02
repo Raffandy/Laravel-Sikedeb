@@ -1,7 +1,8 @@
 <template>
   <div class="flex overflow-hidden bg-white">
-    <aside class="sidebar bg-gray-100 w-64">
+    <aside class="sidebar bg-gray-100 w-64 flex flex-col">
       <div class="flex items-center gap-4 p-4 text-xs font-extrabold text-white bg-red-950 rounded-lg">
+        <img src="../../../public/assets/Exclude.png" alt="Logo" class="object-contain w-[20px]" />
         <span>$IKEDEB</span>
       </div>
       <a href="/dashboard/data" class="sidebar-link" :class="{ 'active': activeMenu === 'home' }" @click="setActiveMenu('home')">
@@ -25,12 +26,34 @@
           </a>
         </div>
       </div>
+
+      <!-- Flex Grow to Push Profile to Bottom -->
+      <div class="flex-grow"></div>
+
+      <!-- User Profile Section (at the bottom) -->
+      <div class="user-profile mt-4 p-4 cursor-pointer" @click="toggleProfileModal">
+        <div class="flex items-center gap-2 p-2 border-t-2 border-gray-200 hover:bg-gray-100 rounded-lg">
+          <img src="../../../public/assets/user.png" alt="Profile Icon" class="icon" />
+          <span class="text-sm font-medium">{{ username }}</span>
+        </div>
+      </div>
     </aside>
 
     <main class="flex-1 p-5">
       <header class="py-4">
         <h1 class="text-gray-800 font-bold">Edit Data Nasabah</h1>
       </header>
+
+      <!-- User Profile Modal -->
+      <div v-if="profileModalOpen" class="profile-modal fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg w-80 shadow-lg">
+          <h2 class="text-xl font-bold mb-4">User Profile</h2>
+          <p class="text-sm text-gray-600 mb-4">Name: {{ username }}</p>
+          <button @click="profile" class="cancel-button mt-2 w-full bg-blue-300 text-black py-2 rounded">Profil</button>
+          <button @click="logout" class="logout-button mt-4 w-full bg-red-500 text-white py-2 rounded">Logout</button>
+          <button @click="toggleProfileModal" class="cancel-button mt-2 w-full bg-gray-300 text-black py-2 rounded">Cancel</button>
+        </div>
+      </div>
 
       <!-- Form for Editing Nasabah Details -->
       <div :key="nasabah.id">
@@ -98,10 +121,14 @@ import { Inertia } from '@inertiajs/inertia';
 export default {
   props: {
     nasabah: Object,
+    username: String,
+    role: String,
   },
   setup(props) {
     const activeDataMenu = ref('personal');
-    const isKelolaMenuOpen = ref(false);
+    const isKelolaMenuOpen = ref(true);
+    const profileModalOpen = ref(false);
+    
 
     const form = reactive({
       nama: '',
@@ -165,6 +192,18 @@ export default {
       });
     };
 
+    function toggleProfileModal() {
+      profileModalOpen.value = !profileModalOpen.value;
+    };
+
+    const profile = () => {
+      Inertia.get(route('profile.edit'));
+    };
+
+    const logout = () => {
+      Inertia.post(route('logout'));
+    };
+
     return {
       form,
       activeDataMenu,
@@ -173,6 +212,10 @@ export default {
       isKelolaMenuOpen,
       setActiveDataMenu,
       toggleKelolaMenu,
+      profileModalOpen,
+      toggleProfileModal,
+      profile,
+      logout,
     };
   },
 };

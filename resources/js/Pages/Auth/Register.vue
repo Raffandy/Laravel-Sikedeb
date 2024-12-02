@@ -4,7 +4,7 @@
     <div class="flex shrink-0 mt-12 max-w-full rounded-xl bg-red-950 bg-opacity-90 h-[7px] w-[280px] max-md:mt-10"></div>
     <section class="flex flex-col items-center w-full max-w-[508px]">
       <h1 class="mt-24 text-xl font-bold text-slate-900 text-opacity-90 max-md:mt-10">Sign Up</h1>
-      <p class="text-black text-opacity-50">Sign up with your details to continue</p>
+      <p class="text-black text-opacity-50">Create User Account</p>
       <form @submit.prevent="submit" class="w-full mt-4 space-y-3">
         <div class="space-y-4 w-full">
           <div>
@@ -52,16 +52,12 @@
             />
           </div>
         </div>
-        <div class="flex mt-3">
-          <p class="text-black text-opacity-50">Already have an account?</p>
-          <inertia-link href="/login" class="text-blue-600 ml-1">Sign in</inertia-link>
-        </div>
         <div class="flex justify-center mt-16 w-full">
           <button type="submit" class="px-6 py-3 text-white bg-red-900 rounded-sm" :disabled="form.processing">
             Sign up
           </button>
         </div>
-        <p v-if="form.errors" class="text-red-600 mt-2">{{ form.errors }}</p>
+        
       </form>
     </section>
   </main>

@@ -18,16 +18,10 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified', 'role:user'])->name('dashboard');
 
-Route::get('/dashboardadmin', function () {
-    return Inertia::render('Admin/LandingAdminView', [
-        'role' => auth()->user()->role, // Meneruskan role user ke Vue component
-    ]);
-})->middleware(['auth', 'verified',])->name('dashboard_admin');
-
+// Route::get('/dashboard', function () {
+//     return Inertia::render('Dashboard');
+// })->middleware(['auth', 'verified', 'role:user'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -44,11 +38,8 @@ Route::middleware(['auth', 'role:user'])->group(function(){
     Route::get('/user/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
 });
 
-// Route::get('/kelola', function () {
-//     return Inertia::render('KelolaData');
-// })->middleware(['auth', 'verified'])->name('keloladata');
-
 Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [DataController::class, 'index'])->name('dashboard');
     Route::get('/kelola', [DataController::class, 'kelola'])->name('keloladata');
     Route::post('/data/store', [DataController::class, 'store'])->name('data.store');
     Route::get('/dashboard/data', [DataController::class, 'index'])->name('data.get');
@@ -65,13 +56,5 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/data/store-admin', [DataController::class, 'storeAdmin'])->name('data.storeAdmin');
 
 });
-
-
-Route::get('/penilaian', function () {
-    return Inertia::render('PenilaianView');
-})->middleware(['auth', 'verified'])->name('penilaian');
-Route::get('/tes', function () {
-    return Inertia::render('TesDashboard');
-})->middleware(['auth', 'verified'])->name('tes');
 
 require __DIR__.'/auth.php';

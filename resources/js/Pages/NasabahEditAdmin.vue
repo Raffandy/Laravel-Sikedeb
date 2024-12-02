@@ -3,6 +3,7 @@
     <aside class="sidebar bg-gray-100 w-64 flex flex-col">
       <!-- Sidebar Content -->
       <div class="flex items-center gap-4 p-4 text-xs font-extrabold text-white bg-red-950 rounded-lg">
+        <img src="../../../public/assets/Exclude.png" alt="Logo" class="object-contain w-[20px]" />
         <span>$IKEDEB</span>
       </div>
       <a href="/dashboard/data" class="sidebar-link" :class="{'active': activeMenu === 'home'}" @click="setActiveMenu('home')">
@@ -11,6 +12,7 @@
       </a>
       <div>
         <a href="#" class="sidebar-link" :class="{'active': activeMenu === 'kelola'}" @click="toggleKelolaMenu">
+          <img src="../../../public/assets/Icon.png" alt="Kelola Data Icon" class="icon" /> 
           Kelola Data
         </a>
         <div v-if="isKelolaMenuOpen" class="submenu">
@@ -28,12 +30,42 @@
           </a>
         </div>
       </div>
+      <!-- End of Sesuaikan Bar Kelola untuk User dan Admin -->
+      <a v-if="role === 'admin'" href="/profil-standar" class="sidebar-link" :class="{'active': activeMenu === 'profil standar'}" @click="setActiveMenu('profil standar')">
+        <img src="../../../public/assets/IconPenilaian.png" alt="Penilaian Icon" class="icon" /> 
+        Profil Standar
+      </a>
+      <a v-if="role === 'admin'" href="/register" class="sidebar-link" :class="{'active': activeMenu === 'register'}" @click="setActiveMenu('register')">
+        <img src="../../../public/assets/Register.png" alt="Register Icon" class="icon" /> 
+        Registrasi User
+      </a>
+      <!-- Flex Grow to Push Profile to Bottom -->
+      <div class="flex-grow"></div>
+
+      <!-- User Profile Section (at the bottom) -->
+      <div class="user-profile mt-4 p-4 cursor-pointer" @click="toggleProfileModal">
+        <div class="flex items-center gap-2 p-2 border-t-2 border-gray-200 hover:bg-gray-100 rounded-lg">
+          <img src="../../../public/assets/user.png" alt="Profile Icon" class="icon" />
+          <span class="text-sm font-medium">{{ username }}</span>
+        </div>
+      </div>
     </aside>
 
     <main class="flex-1 p-5">
       <header class="py-4">
         <h1 class="text-gray-800 font-bold">Edit Data Nasabah</h1>
       </header>
+
+      <!-- User Profile Modal -->
+      <div v-if="profileModalOpen" class="profile-modal fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg w-80 shadow-lg">
+          <h2 class="text-xl font-bold mb-4">User Profile</h2>
+          <p class="text-sm text-gray-600 mb-4">Name: {{ username }}</p>
+          <button @click="profile" class="cancel-button mt-2 w-full bg-blue-300 text-black py-2 rounded">Profil</button>
+          <button @click="logout" class="logout-button mt-4 w-full bg-red-500 text-white py-2 rounded">Logout</button>
+          <button @click="toggleProfileModal" class="cancel-button mt-2 w-full bg-gray-300 text-black py-2 rounded">Cancel</button>
+        </div>
+      </div>
 
       <form @submit.prevent="updateNasabah">
         <!-- Personal Details -->
@@ -112,10 +144,13 @@ export default {
   props: {
     nasabah: Object,
     users: Array,
+    username: String,
+    role: String,
   },
   setup(props) {
     const activeDataMenu = ref('personal');
-    const isKelolaMenuOpen = ref(false);
+    const isKelolaMenuOpen = ref(true);
+    const profileModalOpen = ref(false);
 
     const form = reactive({
       nama: '',
@@ -173,6 +208,19 @@ export default {
       Inertia.put(`/data/${props.nasabah.id}`, form);
     };
 
+    const toggleProfileModal = () => {
+      profileModalOpen.value = !profileModalOpen.value;
+    };
+
+    const profile = () => {
+      Inertia.get(route('profile.edit'));
+    };
+
+    const logout = () => {
+      Inertia.post(route('logout'));
+    };
+
+
     return {
       form,
       activeDataMenu,
@@ -181,6 +229,10 @@ export default {
       toggleKelolaMenu,
       setActiveDataMenu,
       updateNasabah,
+      profileModalOpen,
+      toggleProfileModal,
+      profile,
+      logout,
     };
   },
 };

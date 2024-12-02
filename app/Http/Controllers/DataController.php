@@ -40,6 +40,8 @@ class DataController extends Controller
         });
     }
 
+    $query->orderBy('created_at', 'desc');
+    
     $nasabahList = $query->get();
 
     return Inertia::render('Dashboard', [
@@ -118,12 +120,16 @@ class DataController extends Controller
             return Inertia::render('NasabahEditAdmin', [
             'nasabah' => $nasabah,
             'users' => $users,
+            'username' => $user->name,
+            'role' => $user->role,
             ]);
 
         } else if ($user->role === 'user') {
 
             return Inertia::render('NasabahEdit', [
             'nasabah' => $nasabah,
+            'username' => $user->name,
+            'role' => $user->role,
             ]);
 
         }

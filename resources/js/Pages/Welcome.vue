@@ -11,8 +11,8 @@
                 <!-- Menu Links -->
                 <ul data-layername="menu" class="flex gap-10 items-center font-medium max-md:max-w-full">
                     <li><a href="/" class="hover:text-red-400 text-white">Home</a></li>
-                    <li><a href="/kelola-data" class="hover:text-red-400 text-white">Kelola Data</a></li>
-                    <li><a href="/penilaian" class="hover:text-red-400 text-white">Penilaian Kelayakan Kredit</a></li>
+                    <li><a href="/dashboard/data" class="hover:text-red-400 text-white">Kelola Data</a></li>
+                    <li><a href="/dashboard/data" class="hover:text-red-400 text-white">Penilaian Kelayakan Kredit</a></li>
                 </ul>
 
                 <!-- Login Button -->
@@ -32,9 +32,9 @@
                                 <p data-layername="description" class="mt-10 text-xl leading-7 text-justify max-md:max-w-full text-white">
                                     Selamat datang di Sistem Kelayakan Debitur, platform yang dirancang untuk memudahkan evaluasi dan pengelolaan data nasabah. Di sini, Anda dapat melakukan berbagai fungsi, seperti melakukan penilaian kelayakan kredit secara akurat berdasarkan data nasabah, memastikan kelengkapan informasi, dan mengelola seluruh data nasabah dengan mudah.
                                 </p>
-                                <button class="flex gap-4 items-center self-start px-10 py-5 mt-10 text-lg font-medium bg-red-700 rounded-[64px] max-md:px-6 text-white hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-700" tabindex="0">
+                                <a href="/dashboard/data"class="flex gap-4 items-center self-start px-10 py-5 mt-10 text-lg font-medium bg-red-700 rounded-[64px] max-md:px-6 text-white hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-700" tabindex="0">
                                     <span>Get Started</span>
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </article>
