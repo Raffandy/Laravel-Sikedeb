@@ -42,11 +42,14 @@
       </aside>
     </div>
   
-    <!-- Profile Modal (Pop-up for user profile) -->
-    <div v-if="profileModalOpen" class="profile-modal fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+    <!-- User Profile Modal -->
+      <div v-if="profileModalOpen" class="profile-modal fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
         <div class="bg-white p-6 rounded-lg w-80 shadow-lg">
           <h2 class="text-xl font-bold mb-4">User Profile</h2>
+          <p v-if="role === 'user'" p class="text-sm text-gray-600 mb-4">ID Petugas: {{ user.id }}</p>
           <p class="text-sm text-gray-600 mb-4">Name: {{ username }}</p>
+          <p class="text-sm text-gray-600 mb-4">Email: {{ email }}</p>
+          <p class="text-sm text-gray-600 mb-4">Keterangan: {{ role }}</p>
           <button @click="Inertia.get(route('profile.edit'));" class="cancel-button mt-2 w-full bg-blue-300 text-black py-2 rounded">Profil</button>
           <button @click="Inertia.post(route('logout'));" class="logout-button mt-4 w-full bg-red-500 text-white py-2 rounded">Logout</button>
           <button @click="toggleProfileModal" class="cancel-button mt-2 w-full bg-gray-300 text-black py-2 rounded">Cancel</button>
@@ -60,6 +63,7 @@
   
   // Sidebar State
   const activeMenu = ref('profil standar');
+  const email = ref('admin@gmai.com');
   const role = ref('admin'); // Set role dynamically or pass it as prop
   const username = ref('admin'); // Example username, can be dynamic as well
   const profileModalOpen = ref(false); // Profile modal visibility state

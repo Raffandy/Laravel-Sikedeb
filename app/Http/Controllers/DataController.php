@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Nasabah;
 use App\Models\Pengajuan;
+use App\Models\ProfilStandar;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -14,6 +15,7 @@ class DataController extends Controller
 {
     $user = auth()->user();
     $query = Nasabah::query();
+    $profilStandar = ProfilStandar::first();
 
     // Muat relasi dengan Pengajuan
     $query->with('pengajuan');
@@ -41,13 +43,16 @@ class DataController extends Controller
     }
 
     $query->orderBy('created_at', 'desc');
-    
+
     $nasabahList = $query->get();
 
     return Inertia::render('Dashboard', [
         'username' => $user->name,
         'nasabahList' => $nasabahList,
         'role' => $user->role,
+        'email' => $user->email,
+        'nilaiMinimum' => $profilStandar->nilai_minimum,
+        'user' => $user,
     ]);
 }
 
@@ -68,6 +73,7 @@ class DataController extends Controller
             'username' => $user->name,
             'role' => $user->role,
             'users' => $users, // Kirim data user ke view
+            'user' => $user,
         ]);
     }
 
@@ -122,6 +128,7 @@ class DataController extends Controller
             'users' => $users,
             'username' => $user->name,
             'role' => $user->role,
+            'user' => $user,
             ]);
 
         } else if ($user->role === 'user') {
@@ -130,6 +137,7 @@ class DataController extends Controller
             'nasabah' => $nasabah,
             'username' => $user->name,
             'role' => $user->role,
+            'user' => $user,
             ]);
 
         }
@@ -187,6 +195,7 @@ class DataController extends Controller
         return Inertia::render('KelolaData', [
         'username' => $user->name,
         'role' => $user->role,
+        'user' => $user,
     ]);
     }
 

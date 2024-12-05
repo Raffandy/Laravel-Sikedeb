@@ -50,7 +50,7 @@
           <h1 class="text-gray-800 font-bold">{{ activeMenu === 'home' ? 'Home' : 'Kelola Data' }}</h1>
           <div class="flex items-center gap-2">
             <div class="relative">
-              <input type="text" v-model="searchQuery" placeholder="Search..." class="search-input" />
+              <input type="text" v-model="searchQuery" placeholder="Search..." class="search-input"  @keyup.enter="handleSearch"/>
               <button @click="handleSearch" class="search-button absolute inset-y-0 right-0 flex items-center pr-3">🔍</button>
             </div>
             <button v-if="role === 'admin'" @click="Inertia.visit('/kelola-admin');" class="add-new-button">Add New</button>
@@ -63,7 +63,10 @@
       <div v-if="profileModalOpen" class="profile-modal fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
         <div class="bg-white p-6 rounded-lg w-80 shadow-lg">
           <h2 class="text-xl font-bold mb-4">User Profile</h2>
+          <p v-if="role === 'user'" p class="text-sm text-gray-600 mb-4">ID Petugas: {{ user.id }}</p>
           <p class="text-sm text-gray-600 mb-4">Name: {{ username }}</p>
+          <p class="text-sm text-gray-600 mb-4">Email: {{ email }}</p>
+          <p class="text-sm text-gray-600 mb-4">Keterangan: {{ role }}</p>
           <button @click="Inertia.get(route('profile.edit'));" class="cancel-button mt-2 w-full bg-blue-300 text-black py-2 rounded">Profil</button>
           <button @click="Inertia.post(route('logout'));" class="logout-button mt-4 w-full bg-red-500 text-white py-2 rounded">Logout</button>
           <button @click="toggleProfileModal" class="cancel-button mt-2 w-full bg-gray-300 text-black py-2 rounded">Cancel</button>
@@ -91,20 +94,47 @@
         </thead>
         <tbody>
           <tr v-for="nasabah in nasabahList" :key="nasabah.id">
-            <td>{{ nasabah.nik }}</td>
-            <td>{{ nasabah.nama }}</td>
-            <td>{{ nasabah.status }}</td>
-            <td v-if="role === 'admin'">{{ nasabah.user_id }}</td>
-            <td>
-              <select @change="handleAction($event, nasabah)">
-                <option value="">Pilih Aksi</option>
-                <option value="hitung">Hitung</option>
-                <option value="detail">Detail</option>
-                <option value="edit">Edit</option>
-                <option value="hapus">Hapus</option>
-              </select>
-            </td>
-          </tr>
+        <td class="px-4 py-2">{{ nasabah.nik }}</td>
+        <td class="px-4 py-2">{{ nasabah.nama }}</td>
+        <td class="px-4 py-2">{{ nasabah.status }}</td>
+        <td v-if="role === 'admin'" class="px-4 py-2">{{ nasabah.user_id }}</td>
+        <td class="px-4 py-2">
+          <!-- Kontainer flex untuk tombol yang di tengah -->
+          <div class="flex justify-center space-x-2">
+            <!-- Tombol Hitung -->
+            <button 
+              @click="handleAction('hitung', nasabah)" 
+              class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none transition-all duration-300"
+            >
+              Hitung
+            </button>
+            
+            <!-- Tombol Detail -->
+            <button 
+              @click="handleAction('detail', nasabah)" 
+              class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 focus:outline-none transition-all duration-300"
+            >
+              Detail
+            </button>
+            
+            <!-- Tombol Edit -->
+            <button 
+              @click="handleAction('edit', nasabah)" 
+              class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 focus:outline-none transition-all duration-300"
+            >
+              Edit
+            </button>
+            
+            <!-- Tombol Hapus -->
+            <button 
+              @click="handleAction('hapus', nasabah)" 
+              class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 focus:outline-none transition-all duration-300"
+            >
+              Hapus
+            </button>
+          </div>
+        </td>
+      </tr>
         </tbody>
       </table>
     </main>
@@ -160,7 +190,7 @@
       </div>
       <div class="grid grid-cols-3 gap-2 items-start">
         <p class="font-medium text-gray-800 col-span-1">Nilai Standar Kelayakan</p>
-        <p class="text-gray-600 col-span-2">: 3.4</p>
+        <p class="text-gray-600 col-span-2">: {{nilaiMinimum}} </p>
       </div>
       <div class="grid grid-cols-3 gap-2 items-start">
         <p class="font-medium text-gray-800 col-span-1">Nilai yang Diperoleh</p>
@@ -220,9 +250,7 @@ function handleSearch() {
   });
 }
 
-function handleAction(event, nasabah) {
-  const action = event.target.value;
-  
+function handleAction(action, nasabah) {
   if (action === 'hitung') {
     Inertia.post(route('nasabah.hitung', nasabah.id), {}, {
       onSuccess: (page) => {
@@ -236,24 +264,22 @@ function handleAction(event, nasabah) {
       }
     });
   } else if (action === 'detail') {
-      selectedNasabah.value = nasabah;
-      assessmentModalOpen.value = true;
+    selectedNasabah.value = nasabah;
+    assessmentModalOpen.value = true;
   } else if (action === 'edit') {
-      Inertia.get(route('data.edit', nasabah.id));
+    Inertia.get(route('data.edit', nasabah.id));
   } else if (action === 'hapus') {
-      if (confirm('Yakin ingin menghapus nasabah ini?')) {
-        Inertia.delete(route('data.destroy', nasabah.id), {
-          onSuccess: () => {
-            alert('Nasabah berhasil dihapus');
-            event.target.value = ''; // reset dropdown
-          },
-          onError: () => alert('Terjadi kesalahan saat menghapus data'),
-        });
-      }
+    if (confirm('Yakin ingin menghapus nasabah ini?')) {
+      Inertia.delete(route('data.destroy', nasabah.id), {
+        onSuccess: () => {
+          alert('Nasabah berhasil dihapus');
+        },
+        onError: () => alert('Terjadi kesalahan saat menghapus data'),
+      });
+    }
   }
-  
-  event.target.value = ''; // reset dropdown
 }
+
 
 function toggleProfileModal() {
   profileModalOpen.value = !profileModalOpen.value;
@@ -266,6 +292,9 @@ export default {
     nasabahList: Array,
     username: String,
     role: String,
+    email: String,
+    nilaiMinimum: Number,
+    user: Array,
   },
 };
 </script>
@@ -354,4 +383,3 @@ export default {
     line-height: 1; /* Mengatur jarak vertikal antara titik */
   }
   </style>
-  

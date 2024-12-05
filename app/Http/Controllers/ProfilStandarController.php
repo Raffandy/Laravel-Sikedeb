@@ -28,8 +28,21 @@ class ProfilStandarController extends Controller
             'shm' => 'required|integer|min:1|max:5',
         ]);
 
+        // Menghitung nilai_minimum berdasarkan formula
+        $nilai_minimum = (
+            $request->slik + 
+            $request->pendapatan_utama + 
+            $request->pendapatan_lain + 
+            $request->modal + 
+            $request->aset
+        ) / 5;
+
         $profilStandar = ProfilStandar::first();
-        $profilStandar->update($request->all());
+        // $profilStandar->update($request->all());
+        $profilStandar->update([
+            ...$request->all(),
+            'nilai_minimum' => $nilai_minimum // Menyertakan nilai_minimum dalam update
+        ]);
 
         return redirect()->back()->with('success', 'Profil standar berhasil diperbarui !');
     }

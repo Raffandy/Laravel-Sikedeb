@@ -21,5 +21,6 @@ class ProfilStandar extends Model
         'biaya_lain', 
         'bpkb', 
         'shm',
+        'nilai_minimum',
     ];
 }

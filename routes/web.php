@@ -49,12 +49,16 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/nasabah/hitung/{id}', [PerhitunganController::class, 'store'])->name('nasabah.hitung');
 
-    Route::get('/profil-standar', [ProfilStandarController::class, 'index'])->name('profil-standar.index');
-    Route::put('/profil-standar/update', [ProfilStandarController::class, 'update'])->name('profil-standar.update');
+    
 
     Route::get('/kelola-admin', [DataController::class, 'kelolaAdmin'])->name('data.kelolaAdmin');
     Route::post('/data/store-admin', [DataController::class, 'storeAdmin'])->name('data.storeAdmin');
 
+});
+
+Route::middleware(['auth', 'role:admin'])->group(function(){
+    Route::get('/profil-standar', [ProfilStandarController::class, 'index'])->name('profil-standar.index');
+    Route::put('/profil-standar/update', [ProfilStandarController::class, 'update'])->name('profil-standar.update');
 });
 
 require __DIR__.'/auth.php';

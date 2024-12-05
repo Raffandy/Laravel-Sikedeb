@@ -41,7 +41,7 @@ class PerhitunganController extends Controller
     // Lakukan perhitungan yang sama seperti di contoh sebelumnya
     $nilai_slik = $this->calculateSlik($pengajuan->slik);
     $nilai_pendapatan_utama = $this->calculatePendapatan($pengajuan->pendapatan_utama);
-    $nilai_pendapatan_lain = $this->calculatePendapatan($pengajuan->pendapatan_lain);
+    $nilai_pendapatan_lain = $this->calculatePendapatanLain($pengajuan->pendapatan_lain);
     $nilai_modal = $this->calculateModal($pengajuan->modal);
     $nilai_aset = $this->calculateAset($pengajuan->aset);
     $nilai_tanggungan = $this->calculateTanggungan($pengajuan->tanggungan);
@@ -58,6 +58,7 @@ class PerhitunganController extends Controller
             'c6' => $profilStandar->tanggungan,
             'c7' => $profilStandar->biaya_lain,
             'c8' => $profilStandar->bpkb,
+            'nilai_minimum' => $profilStandar->nilai_minimum,
         ];
 
         // Hitung gap
@@ -81,7 +82,7 @@ class PerhitunganController extends Controller
         $nasabah->nilai = $total_nilai;
 
         // Tentukan kelayakan berdasarkan nilai
-        $nasabah->status = $total_nilai >= 3.4 ? 'layak' : 'tidak layak';
+        $nasabah->status = $total_nilai >= $profil_standar['nilai_minimum'] ? 'layak' : 'tidak layak';
 
         // Simpan pengajuan ke database
         // $pengajuan->save();
@@ -120,6 +121,17 @@ class PerhitunganController extends Controller
         };
     }
 
+    private function calculatePendapatanLain($pendapatan)
+    {
+        return match (true) {
+            $pendapatan >= 15000000 => 5,
+            $pendapatan >= 10000000 => 4,
+            $pendapatan >= 5000000 => 3,
+            $pendapatan >= 1500000 => 2,
+            default => 1,
+        };
+    }
+
     private function calculateModal($modal)
     {
         return match (true) {
@@ -145,12 +157,12 @@ class PerhitunganController extends Controller
     private function calculateTanggungan($tanggungan)
     {
         return match (true) {
-            $tanggungan > 7 => 1,
-            $tanggungan > 5 => 2,
-            $tanggungan > 3 => 3,
-            $tanggungan > 1 => 4,
-            default => 5,
-        };
+        $tanggungan > 7 => 1, // Sangat Kurang
+        $tanggungan >= 6 => 2, // Kurang
+        $tanggungan >= 4 => 3, // Cukup
+        $tanggungan >= 2 => 4, // Baik
+        default => 5, // Sangat Baik
+    };
     }
 
     private function calculateBiayaLain($biaya)
@@ -166,7 +178,7 @@ class PerhitunganController extends Controller
 
     private function calculateBpkb($jenis, $bpkb)
     {
-        if ($jenis == 'bpkb'){
+        if ($jenis == "BPKB"){
             return match (true) {
                 $bpkb >= 50000000 => 5,
                 $bpkb >= 25000000 => 4,
@@ -174,7 +186,7 @@ class PerhitunganController extends Controller
                 $bpkb >= 5000000 => 2,
                 default => 1,
             };
-        } else {
+        } if ($jenis == "SHM") {
             return match (true) {
                 $bpkb >= 200000000 => 5,
                 $bpkb >= 150000000 => 4,
