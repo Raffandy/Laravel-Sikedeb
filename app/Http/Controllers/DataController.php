@@ -12,49 +12,49 @@ use Inertia\Inertia;
 class DataController extends Controller
 {
     public function index(Request $request)
-{
-    $user = auth()->user();
-    $query = Nasabah::query();
-    $profilStandar = ProfilStandar::first();
+    {
+        $user = auth()->user();
+        $query = Nasabah::query();
+        $profilStandar = ProfilStandar::first();
 
-    // Muat relasi dengan Pengajuan
-    $query->with('pengajuan');
+        // Muat relasi dengan Pengajuan
+        $query->with('pengajuan');
 
-    // Admin melihat semua data, user biasa hanya melihat data miliknya
-    if ($user->role !== 'admin') {
-        $query->where('user_id', $user->id);
+        // Admin melihat semua data, user biasa hanya melihat data miliknya
+        if ($user->role !== 'admin') {
+            $query->where('user_id', $user->id);
+        }
+
+        // Filter berdasarkan tab
+        if ($request->filter === 'on going') {
+            $query->where('status', 'on going');
+        } elseif ($request->filter === 'layak') {
+            $query->where('status', 'layak');
+        } elseif ($request->filter === 'tidak layak') {
+            $query->where('status', 'tidak layak');
+        }
+
+        // Pencarian
+        if ($request->has('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('nik', 'like', "%{$request->search}%")
+                    ->orWhere('nama', 'like', "%{$request->search}%");
+            });
+        }
+
+        $query->orderBy('created_at', 'desc');
+
+        $nasabahList = $query->get();
+
+        return Inertia::render('Dashboard', [
+            'username' => $user->name,
+            'nasabahList' => $nasabahList,
+            'role' => $user->role,
+            'email' => $user->email,
+            'nilaiMinimum' => $profilStandar->nilai_minimum,
+            'user' => $user,
+        ]);
     }
-
-    // Filter berdasarkan tab
-    if ($request->filter === 'on going') {
-        $query->where('status', 'on going');
-    } elseif ($request->filter === 'layak') {
-        $query->where('status', 'layak');
-    } elseif ($request->filter === 'tidak layak') {
-        $query->where('status', 'tidak layak');
-    }
-
-    // Pencarian
-    if ($request->has('search')) {
-        $query->where(function ($q) use ($request) {
-            $q->where('nik', 'like', "%{$request->search}%")
-              ->orWhere('nama', 'like', "%{$request->search}%");
-        });
-    }
-
-    $query->orderBy('created_at', 'desc');
-
-    $nasabahList = $query->get();
-
-    return Inertia::render('Dashboard', [
-        'username' => $user->name,
-        'nasabahList' => $nasabahList,
-        'role' => $user->role,
-        'email' => $user->email,
-        'nilaiMinimum' => $profilStandar->nilai_minimum,
-        'user' => $user,
-    ]);
-}
 
     // Fungsi untuk form kelola data admin dengan dropdown
     public function kelolaAdmin(Request $request)
@@ -69,7 +69,7 @@ class DataController extends Controller
         // Ambil semua user untuk dropdown
         $users = User::where('role', 'user')->get(['id', 'name']); // Hanya ambil ID dan nama
 
-        return Inertia::render('KelolaDataAdmin', [
+        return Inertia::render('Admin/KelolaDataAdmin', [
             'username' => $user->name,
             'role' => $user->role,
             'users' => $users, // Kirim data user ke view
@@ -119,29 +119,26 @@ class DataController extends Controller
             abort(403, 'Unauthorized access.');
         }
 
-        if($user->role === 'admin') {
+        if ($user->role === 'admin') {
 
             $users = User::where('role', 'user')->get(['id', 'name']); // Hanya ambil ID dan nama
 
-            return Inertia::render('NasabahEditAdmin', [
-            'nasabah' => $nasabah,
-            'users' => $users,
-            'username' => $user->name,
-            'role' => $user->role,
-            'user' => $user,
+            return Inertia::render('Admin/NasabahEditAdmin', [
+                'nasabah' => $nasabah,
+                'users' => $users,
+                'username' => $user->name,
+                'role' => $user->role,
+                'user' => $user,
             ]);
-
         } else if ($user->role === 'user') {
 
-            return Inertia::render('NasabahEdit', [
-            'nasabah' => $nasabah,
-            'username' => $user->name,
-            'role' => $user->role,
-            'user' => $user,
+            return Inertia::render('User/NasabahEdit', [
+                'nasabah' => $nasabah,
+                'username' => $user->name,
+                'role' => $user->role,
+                'user' => $user,
             ]);
-
         }
-
     }
 
     public function update(Request $request, $id)
@@ -190,13 +187,14 @@ class DataController extends Controller
         return redirect()->route('data.get')->with('success', 'Nasabah berhasil dihapus.');
     }
 
-    public function kelola(Request $request){
+    public function kelola(Request $request)
+    {
         $user = auth()->user();
-        return Inertia::render('KelolaData', [
-        'username' => $user->name,
-        'role' => $user->role,
-        'user' => $user,
-    ]);
+        return Inertia::render('User/KelolaData', [
+            'username' => $user->name,
+            'role' => $user->role,
+            'user' => $user,
+        ]);
     }
 
     // Fungsi untuk menyimpan data dari form kelola admin
@@ -232,6 +230,4 @@ class DataController extends Controller
 
         return redirect()->route('data.get')->with('success', 'Data berhasil disimpan oleh admin!');
     }
-
-
 }

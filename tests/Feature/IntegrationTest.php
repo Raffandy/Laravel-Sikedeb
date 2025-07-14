@@ -89,12 +89,81 @@ class IntegrationTest extends TestCase
         $response->assertDontSee('Nasabah User 1');
 
         // Logout dan login sebagai admin
-        $this->actingAs($admin);
+        $this->actingAs($user1);
 
         // Pastikan admin dapat melihat data User 1
         $response = $this->get('/dashboard/data');
         $response->assertStatus(200);
         $response->assertSee('Nasabah User 1');
+    }
+
+    public function test_user_cannot_access_admin_data()
+    {
+        // Buat dua user dengan role 'user' dan 'admin'
+        $user1 = User::create([
+            'name' => 'User 1',
+            'email' => 'user1@example.com',
+            'password' => bcrypt('password'),
+            'role' => 'user',
+        ]);
+
+        $admin = User::create([
+            'name' => 'User admin',
+            'email' => 'admin@example.com',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+        ]);
+
+        // Login sebagai admin dan buat data Nasabah dan Pengajuan
+        $this->actingAs($admin);
+
+        $nasabah = Nasabah::create([
+            'user_id' => $admin->id,
+            'nama' => 'Nasabah Pertama',
+            'nik' => '123456789',
+            'alamat' => 'Alamat Nasabah Pertama',
+            'pekerjaan' => 'Pekerjaan Nasabah Pertama',
+            'jenis_usaha' => 'Usaha Nasabah Pertama',
+        ]);
+
+        Pengajuan::create([
+            'nasabah_id' => $nasabah->id,
+            'slik' => 4,
+            'pendapatan_utama' => 5000000,
+            'pendapatan_lain' => 1000000,
+            'modal' => 2000000,
+            'aset' => 10000000,
+            'tanggungan' => 1,
+            'biaya_lain' => 500000,
+            'jenis_jaminan' => 'BPKB',
+            'harga' => 15000000,
+        ]);
+
+        ProfilStandar::create([
+            'slik' => 4,
+            'pendapatan_utama' => 4,
+            'pendapatan_lain' => 4,
+            'modal' => 3,
+            'aset' => 5,
+            'tanggungan' => 3,
+            'biaya_lain' => 3,
+            'bpkb' => 4,
+            'shm' => 5,
+            'nilai_minimum' => 4.0,
+        ]);
+
+        // Pastikan admin dapat melihat datanya sendiri denggan menggunakan assertSee
+        $response = $this->get('/dashboard/data');
+        $response->assertStatus(200);
+        $response->assertSee('Nasabah Pertama');
+
+        // Logout dan login sebagai User 1
+        $this->actingAs($user1);
+
+        // Pastikan User 1 tidak dapat melihat data admin dengan menggunakan assertDontSee
+        $response = $this->get('/dashboard/data');
+        $response->assertStatus(200);
+        $response->assertDontSee('Nasabah Pertama');
     }
 
     public function test_it_displays_profil_standar_for_admin()
@@ -106,8 +175,15 @@ class IntegrationTest extends TestCase
             'role' => 'admin',
         ]);
 
+        $user1 = User::create([
+            'name' => 'User 1',
+            'email' => 'user1@example.com',
+            'password' => bcrypt('password'),
+            'role' => 'user',
+        ]);
+
         ProfilStandar::create([
-            'nilai_minimum' => 70,
+            'nilai_minimum' => 3.4,
             'slik' => 5,
             'pendapatan_utama' => 5,
             'pendapatan_lain' => 4,
@@ -125,6 +201,14 @@ class IntegrationTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('ProfilStandar');
+
+        // Login dan lihat sebagai user
+        $this->actingAs($user1);
+
+        $response = $this->get('/profil-standar');
+
+        $response->assertStatus(302);
+        $response->assertDontSee('ProfilStandar');
     }
 
     public function test_it_updates_profil_standar()

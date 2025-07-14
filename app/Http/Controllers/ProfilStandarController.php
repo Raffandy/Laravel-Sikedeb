@@ -8,14 +8,16 @@ use Inertia\Inertia;
 
 class ProfilStandarController extends Controller
 {
-    public function index() {
+    public function index()
+    {
         $profilStandar = ProfilStandar::first();
-        return Inertia::render('ProfilStandar', [
-        'profil_standar' => $profilStandar,
-    ]);
+        return Inertia::render('Admin/ProfilStandar', [
+            'profil_standar' => $profilStandar,
+        ]);
     }
 
-    public function update(Request $request) {
+    public function update(Request $request)
+    {
         $request->validate([
             'slik' => 'required|integer|min:1|max:5',
             'pendapatan_utama' => 'required|integer|min:1|max:5',
@@ -30,10 +32,10 @@ class ProfilStandarController extends Controller
 
         // Menghitung nilai_minimum berdasarkan formula
         $nilai_minimum = (
-            $request->slik + 
-            $request->pendapatan_utama + 
-            $request->pendapatan_lain + 
-            $request->modal + 
+            $request->slik +
+            $request->pendapatan_utama +
+            $request->pendapatan_lain +
+            $request->modal +
             $request->aset
         ) / 5;
 

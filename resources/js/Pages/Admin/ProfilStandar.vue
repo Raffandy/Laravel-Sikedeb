@@ -38,7 +38,7 @@
 <script setup>
 import { ref } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
-import Sidebar from './Sidebar.vue'; // Import Sidebar component
+import Sidebar from '../Sidebar.vue'; // Import Sidebar component
 
 // Sidebar State
 const activeMenu = ref('profil standar');

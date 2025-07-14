@@ -2,17 +2,17 @@
   <div class="flex overflow-hidden bg-white">
     <aside class="sidebar bg-gray-100 w-64 flex flex-col">
       <div class="flex items-center gap-4 p-4 text-xs font-extrabold text-white bg-red-950 rounded-lg">
-        <img src="../../../public/assets/Exclude.png" alt="Logo" class="object-contain w-[20px]" />
+        <img src="../../../../public/assets/Exclude.png" alt="Logo" class="object-contain w-[20px]" />
         <span>$IKEDEB</span>
       </div>
       <a href="/dashboard/data" class="sidebar-link" :class="{'active': activeMenu === 'home'}" @click="setActiveMenu('home')">
-        <img src="../../../public/assets/Vector.png" alt="Kelola Data Icon" class="icon" /> 
+        <img src="../../../../public/assets/Vector.png" alt="Kelola Data Icon" class="icon" /> 
         Home
       </a>
 
       <div>
         <a href="#" class="sidebar-link" :class="{'active': activeMenu === 'kelola'}" @click="toggleKelolaMenu">
-          <img src="../../../public/assets/Icon.png" alt="Kelola Data Icon" class="icon" /> 
+          <img src="../../../../public/assets/Icon.png" alt="Kelola Data Icon" class="icon" /> 
           Kelola Data
         </a>
         <div v-if="isKelolaMenuOpen" class="submenu">
@@ -33,7 +33,7 @@
       <!-- User Profile Section (at the bottom) -->
       <div class="user-profile mt-4 p-4 cursor-pointer" @click="toggleProfileModal">
         <div class="flex items-center gap-2 p-2 border-t-2 border-gray-200 hover:bg-gray-100 rounded-lg">
-          <img src="../../../public/assets/user.png" alt="Profile Icon" class="icon" />
+          <img src="../../../../public/assets/user.png" alt="Profile Icon" class="icon" />
           <span class="text-sm font-medium">{{ username }}</span>
         </div>
       </div>
